@@ -3,9 +3,17 @@ package shop.nuribooks.auth.common.config.feign;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
-@FeignClient(name = "memberFeignClient", url = "http://localhost:8080/member")
+import shop.nuribooks.auth.dto.MemberCreateReq;
+import shop.nuribooks.auth.dto.MemberRes;
+
+@FeignClient(name = "memberFeignClient", url = "http://localhost:9090/member")
 public interface MemberFeignClient {
 	@GetMapping("/{username}")
-	String findByUsername(@PathVariable("username") String username);
+	MemberRes findByUsername(@PathVariable("username") String username);
+
+	@PostMapping("/register")
+	void registerMember(@RequestBody MemberCreateReq req);
 }
