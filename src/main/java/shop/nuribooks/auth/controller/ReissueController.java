@@ -11,14 +11,18 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import shop.nuribooks.auth.common.util.CookieUtils;
 import shop.nuribooks.auth.common.util.JwtUtils;
+import shop.nuribooks.auth.common.util.RefreshUtils;
+import shop.nuribooks.auth.repository.RefreshRepository;
 
 @RestController
 public class ReissueController {
 	private final JwtUtils jwtUtils;
+	private final RefreshRepository refreshRepository;
 
 	@Autowired
-	public ReissueController(JwtUtils jwtUtils) {
+	public ReissueController(JwtUtils jwtUtils, RefreshRepository refreshRepository) {
 		this.jwtUtils = jwtUtils;
+		this.refreshRepository = refreshRepository;
 	}
 
 	@PostMapping("/reissue")
@@ -45,7 +49,9 @@ public class ReissueController {
 		String newRefreshToken = jwtUtils.createJwt("refresh", username, role, 60 * 60 * 3000L);
 
 		response.setHeader("access", newAccessToken);
-		response.addCookie(CookieUtils.createCookie("refresh", newAccessToken));
+		response.addCookie(CookieUtils.createCookie("refresh", newRefreshToken));
+		RefreshUtils.reissueOnDb(refreshRepository, username, refreshToken, newRefreshToken, 60 * 60 * 3000L);
+
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 }

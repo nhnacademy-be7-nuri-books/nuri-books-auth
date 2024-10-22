@@ -15,6 +15,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import shop.nuribooks.auth.common.filter.CustomLoginFilter;
 import shop.nuribooks.auth.common.filter.JwtFilter;
 import shop.nuribooks.auth.common.util.JwtUtils;
+import shop.nuribooks.auth.repository.RefreshRepository;
 
 @Configuration
 @EnableWebSecurity
@@ -31,7 +32,7 @@ public class SecurityConfig {
 	}
 
 	@Bean
-	public SecurityFilterChain securityFilterChain(HttpSecurity http, AuthenticationManager authenticationManager, JwtUtils jwtUtils) throws Exception {
+	public SecurityFilterChain securityFilterChain(HttpSecurity http, AuthenticationManager authenticationManager, JwtUtils jwtUtils, RefreshRepository refreshRepository) throws Exception {
 		http
 			.csrf(AbstractHttpConfigurer::disable);
 
@@ -43,7 +44,7 @@ public class SecurityConfig {
 
 		http
 			.authorizeHttpRequests(auth -> auth
-				.requestMatchers("/login", "/", "/join", "/reissue").permitAll()
+				.requestMatchers("/login", "/", "/join", "/reissue", "/h2-console").permitAll()
 				.requestMatchers("/admin").hasRole("ADMIN")
 				.anyRequest().authenticated());
 
@@ -55,7 +56,7 @@ public class SecurityConfig {
 			.addFilterBefore(new JwtFilter(jwtUtils), CustomLoginFilter.class);
 
 		http
-			.addFilterAt(new CustomLoginFilter(authenticationManager, jwtUtils), UsernamePasswordAuthenticationFilter.class);
+			.addFilterAt(new CustomLoginFilter(authenticationManager, jwtUtils, refreshRepository), UsernamePasswordAuthenticationFilter.class);
 
 
 		return http.build();

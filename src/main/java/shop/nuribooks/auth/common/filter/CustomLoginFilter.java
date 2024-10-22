@@ -2,6 +2,7 @@ package shop.nuribooks.auth.common.filter;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Date;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -20,16 +21,21 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import shop.nuribooks.auth.common.util.CookieUtils;
 import shop.nuribooks.auth.common.util.JwtUtils;
+import shop.nuribooks.auth.common.util.RefreshUtils;
 import shop.nuribooks.auth.dto.CustomUserDetails;
 import shop.nuribooks.auth.dto.LoginReq;
+import shop.nuribooks.auth.repository.RefreshRepository;
 
 public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
 	private final AuthenticationManager authenticationManager;
 	private final JwtUtils jwtUtils;
+	private final RefreshRepository refreshRepository;
 
-	public CustomLoginFilter(AuthenticationManager authenticationManager, JwtUtils jwtUtils) {
+	public CustomLoginFilter(AuthenticationManager authenticationManager, JwtUtils jwtUtils,
+		RefreshRepository refreshRepository) {
 		this.authenticationManager = authenticationManager;
 		this.jwtUtils = jwtUtils;
+		this.refreshRepository = refreshRepository;
 	}
 
 	@Override
@@ -59,9 +65,10 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
 		String role = userDetails.getAuthorities().iterator().next().getAuthority();
 
 		String accessToken = jwtUtils.createJwt("access", username, role, 60 * 60 * 1000L); 		// 1 hour
-		String refreshToken = jwtUtils.createJwt("refresh", username, role, 60 * 60 * 1000 * 3L);	// 3 hour
+		String refreshToken = jwtUtils.createJwt("refresh", username, role, 60 * 60 * 3000L);	// 3 hour
 		response.addHeader("access", accessToken);
 		response.addCookie(CookieUtils.createCookie("refresh", refreshToken));
+		RefreshUtils.addRefreshToken(refreshRepository, username, refreshToken, 60 * 60 * 3000L);
 		response.setStatus(HttpStatus.OK.value());
 	}
 
