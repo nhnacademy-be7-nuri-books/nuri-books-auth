@@ -5,7 +5,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import shop.nuribooks.auth.common.config.feign.MemberFeignClient;
+import shop.nuribooks.auth.common.feign.MemberFeignClient;
 import shop.nuribooks.auth.dto.CustomUserDetails;
 import shop.nuribooks.auth.dto.MemberRes;
 

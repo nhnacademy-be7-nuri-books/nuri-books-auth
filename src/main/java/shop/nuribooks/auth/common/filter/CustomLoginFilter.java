@@ -3,6 +3,7 @@ package shop.nuribooks.auth.common.filter;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -17,6 +18,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletInputStream;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import shop.nuribooks.auth.common.util.CookieUtils;
 import shop.nuribooks.auth.common.util.JwtUtils;
 import shop.nuribooks.auth.dto.CustomUserDetails;
 import shop.nuribooks.auth.dto.LoginReq;
@@ -52,21 +54,20 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
 	@Override
 	protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain,
 		Authentication authentication) throws IOException, ServletException {
-		System.out.println("login success");
-
 		CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
 		String username = userDetails.getUsername();
 		String role = userDetails.getAuthorities().iterator().next().getAuthority();
 
-		// access token
-		String jwt = jwtUtils.createJwt(username, role, 60 * 60 * 1000L); // 1 hour
-		response.addHeader("Authorization", "Bearer " + jwt);
+		String accessToken = jwtUtils.createJwt("access", username, role, 60 * 60 * 1000L); 		// 1 hour
+		String refreshToken = jwtUtils.createJwt("refresh", username, role, 60 * 60 * 1000 * 3L);	// 3 hour
+		response.addHeader("access", accessToken);
+		response.addCookie(CookieUtils.createCookie("refresh", refreshToken));
+		response.setStatus(HttpStatus.OK.value());
 	}
 
 	@Override
 	protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response,
 		AuthenticationException failed) throws IOException, ServletException {
-		System.out.println("logout fail");
 		response.setStatus(401);
 	}
 }

@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import shop.nuribooks.auth.common.config.feign.MemberFeignClient;
+import shop.nuribooks.auth.common.feign.MemberFeignClient;
 import shop.nuribooks.auth.dto.MemberCreateReq;
 import shop.nuribooks.auth.dto.MemberRes;
 
