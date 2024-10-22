@@ -13,6 +13,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import shop.nuribooks.auth.common.filter.CustomLoginFilter;
+import shop.nuribooks.auth.common.filter.JwtFilter;
 import shop.nuribooks.auth.common.util.JwtUtils;
 
 @Configuration
@@ -51,7 +52,11 @@ public class SecurityConfig {
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
 		http
+			.addFilterBefore(new JwtFilter(jwtUtils), CustomLoginFilter.class);
+
+		http
 			.addFilterAt(new CustomLoginFilter(authenticationManager, jwtUtils), UsernamePasswordAuthenticationFilter.class);
+
 
 		return http.build();
 	}

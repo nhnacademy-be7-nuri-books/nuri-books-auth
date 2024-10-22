@@ -60,7 +60,7 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
 
 		// access token
 		String jwt = jwtUtils.createJwt(username, role, 60 * 60 * 1000L); // 1 hour
-		response.addHeader("Access", "Bearer " + jwt);
+		response.addHeader("Authorization", "Bearer " + jwt);
 	}
 
 	@Override
