@@ -17,13 +17,17 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletInputStream;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import shop.nuribooks.auth.common.util.JwtUtils;
+import shop.nuribooks.auth.dto.CustomUserDetails;
 import shop.nuribooks.auth.dto.LoginReq;
 
 public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
 	private final AuthenticationManager authenticationManager;
+	private final JwtUtils jwtUtils;
 
-	public CustomLoginFilter(AuthenticationManager authenticationManager) {
+	public CustomLoginFilter(AuthenticationManager authenticationManager, JwtUtils jwtUtils) {
 		this.authenticationManager = authenticationManager;
+		this.jwtUtils = jwtUtils;
 	}
 
 	@Override
@@ -47,13 +51,22 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
 
 	@Override
 	protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain,
-		Authentication authResult) throws IOException, ServletException {
+		Authentication authentication) throws IOException, ServletException {
 		System.out.println("login success");
+
+		CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+		String username = userDetails.getUsername();
+		String role = userDetails.getAuthorities().iterator().next().getAuthority();
+
+		// access token
+		String jwt = jwtUtils.createJwt(username, role, 60 * 60 * 1000L); // 1 hour
+		response.addHeader("Access", "Bearer " + jwt);
 	}
 
 	@Override
 	protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response,
 		AuthenticationException failed) throws IOException, ServletException {
 		System.out.println("logout fail");
+		response.setStatus(401);
 	}
 }
