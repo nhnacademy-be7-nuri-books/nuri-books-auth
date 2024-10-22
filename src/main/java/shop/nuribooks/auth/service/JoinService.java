@@ -8,6 +8,7 @@ import shop.nuribooks.auth.common.feign.MemberFeignClient;
 import shop.nuribooks.auth.dto.MemberCreateReq;
 import shop.nuribooks.auth.dto.AuthorizedUser;
 
+// TODO: API 테스트를 위한 임시 Service, 추후 삭제 예정
 @Service
 public class JoinService {
 	private final MemberFeignClient memberFeignClient;

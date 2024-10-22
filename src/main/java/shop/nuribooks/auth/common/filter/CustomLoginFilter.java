@@ -2,7 +2,6 @@ package shop.nuribooks.auth.common.filter;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Date;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -28,14 +27,14 @@ import shop.nuribooks.auth.repository.RefreshRepository;
 
 public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
 	private final AuthenticationManager authenticationManager;
-	private final JwtUtils jwtUtils;
 	private final RefreshRepository refreshRepository;
+	private final JwtUtils jwtUtils;
 
 	public CustomLoginFilter(AuthenticationManager authenticationManager, JwtUtils jwtUtils,
 		RefreshRepository refreshRepository) {
 		this.authenticationManager = authenticationManager;
-		this.jwtUtils = jwtUtils;
 		this.refreshRepository = refreshRepository;
+		this.jwtUtils = jwtUtils;
 	}
 
 	@Override
@@ -54,6 +53,7 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
 		String username = loginReq.getUsername();
 		String password = loginReq.getPassword();
 		UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(username, password);
+
 		return authenticationManager.authenticate(token);
 	}
 
@@ -64,8 +64,8 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
 		String username = userDetails.getUsername();
 		String role = userDetails.getAuthorities().iterator().next().getAuthority();
 
-		String accessToken = jwtUtils.createJwt("access", username, role, 60 * 60 * 1000L); 		// 1 hour
-		String refreshToken = jwtUtils.createJwt("refresh", username, role, 60 * 60 * 3000L);	// 3 hour
+		String accessToken = jwtUtils.createJwt("access", username, role, 60 * 60 * 1000L);
+		String refreshToken = jwtUtils.createJwt("refresh", username, role, 60 * 60 * 3000L);
 		response.addHeader("access", accessToken);
 		response.addCookie(CookieUtils.createCookie("refresh", refreshToken));
 		RefreshUtils.addRefreshToken(refreshRepository, username, refreshToken, 60 * 60 * 3000L);

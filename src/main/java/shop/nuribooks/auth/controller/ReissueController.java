@@ -14,6 +14,7 @@ import shop.nuribooks.auth.common.util.JwtUtils;
 import shop.nuribooks.auth.common.util.RefreshUtils;
 import shop.nuribooks.auth.repository.RefreshRepository;
 
+// TODO: Token 재발행을 위한 Controller로 front와 정확한 Spec을 공유하여 수정 예정
 @RestController
 public class ReissueController {
 	private final JwtUtils jwtUtils;

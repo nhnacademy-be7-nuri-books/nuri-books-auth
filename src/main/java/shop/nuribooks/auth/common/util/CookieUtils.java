@@ -7,6 +7,7 @@ public class CookieUtils {
 	public static Cookie createCookie(String key, String value) {
 		Cookie cookie = new Cookie(key, value);
 		cookie.setPath("/");
+		// TODO: https 프로토콜 사용 시 주석 해제 예정
 		// cookie.setSecure(true);
 		cookie.setHttpOnly(true);
 		cookie.setMaxAge(60 * 60);

@@ -42,10 +42,11 @@ public class SecurityConfig {
 		http
 			.httpBasic(AbstractHttpConfigurer::disable);
 
+		// TODO: 임시 인가 처리, 추후 gateway API에서 인가 처리 예정
 		http
 			.authorizeHttpRequests(auth -> auth
-				.requestMatchers("/login", "/", "/join", "/reissue", "/h2-console").permitAll()
-				.requestMatchers("/admin").hasRole("ADMIN")
+				.requestMatchers("/login", "/join", "/reissue").permitAll()
+				.requestMatchers("/admin/**").hasRole("ADMIN")
 				.anyRequest().authenticated());
 
 		http

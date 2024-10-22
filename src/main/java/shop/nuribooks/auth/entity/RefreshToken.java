@@ -7,6 +7,7 @@ import jakarta.persistence.Id;
 import lombok.Getter;
 import lombok.Setter;
 
+// TODO: Refresh entity로 field 확장 또는 redis로 연동하는 경우 수정 예정
 @Getter
 @Setter
 @Entity

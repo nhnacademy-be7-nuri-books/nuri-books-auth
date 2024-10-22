@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import shop.nuribooks.auth.dto.MemberCreateReq;
 import shop.nuribooks.auth.dto.AuthorizedUser;
 
+// TODO: 임시 API에 대하여 통신 중, 추후 url 및 API Spec에 따라 수정 예정
 @FeignClient(name = "memberFeignClient", url = "http://localhost:9090/member")
 public interface MemberFeignClient {
 	@GetMapping("/{username}")
