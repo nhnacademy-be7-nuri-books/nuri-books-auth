@@ -7,12 +7,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import shop.nuribooks.auth.dto.MemberCreateReq;
-import shop.nuribooks.auth.dto.MemberRes;
+import shop.nuribooks.auth.dto.AuthorizedUser;
 
 @FeignClient(name = "memberFeignClient", url = "http://localhost:9090/member")
 public interface MemberFeignClient {
 	@GetMapping("/{username}")
-	MemberRes findByUsername(@PathVariable("username") String username);
+	AuthorizedUser findByUsername(@PathVariable("username") String username);
 
 	@PostMapping("/register")
 	void registerMember(@RequestBody MemberCreateReq req);

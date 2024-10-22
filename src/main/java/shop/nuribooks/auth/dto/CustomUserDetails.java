@@ -7,10 +7,10 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 public class CustomUserDetails implements UserDetails {
-	private final MemberRes member;
+	private final AuthorizedUser user;
 
-	public CustomUserDetails(MemberRes member) {
-		this.member = member;
+	public CustomUserDetails(AuthorizedUser user) {
+		this.user = user;
 	}
 
 	@Override
@@ -19,7 +19,7 @@ public class CustomUserDetails implements UserDetails {
 		authorities.add(new GrantedAuthority() {
 			@Override
 			public String getAuthority() {
-				return member.getRole();
+				return user.getRole();
 			}
 		});
 		return authorities;
@@ -27,12 +27,12 @@ public class CustomUserDetails implements UserDetails {
 
 	@Override
 	public String getPassword() {
-		return member.getPassword();
+		return user.getPassword();
 	}
 
 	@Override
 	public String getUsername() {
-		return member.getUsername();
+		return user.getUsername();
 	}
 
 	@Override

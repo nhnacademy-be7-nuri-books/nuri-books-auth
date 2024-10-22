@@ -1,19 +1,22 @@
 package shop.nuribooks.auth.common.filter;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import shop.nuribooks.auth.common.util.JwtUtils;
 import shop.nuribooks.auth.dto.CustomUserDetails;
-import shop.nuribooks.auth.dto.MemberRes;
+import shop.nuribooks.auth.dto.AuthorizedUser;
 
 public class JwtFilter extends OncePerRequestFilter {
 	private final JwtUtils jwtUtils;
@@ -25,28 +28,36 @@ public class JwtFilter extends OncePerRequestFilter {
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
 		FilterChain filterChain) throws ServletException, IOException {
-		String authorizationToken = request.getHeader("Authorization");
-		if (authorizationToken == null || !authorizationToken.startsWith("Bearer ")) {
+		String accessToken = request.getHeader("access");
+		if (accessToken == null) {
 			filterChain.doFilter(request, response);
 			return;
 		}
 
-		String jwt = authorizationToken.split(" ")[1];
-
-		// token 만료 처리 (현재는 access only)
-		if (jwtUtils.isExpired(jwt)) {
-			filterChain.doFilter(request, response);
+		try {
+			jwtUtils.isExpired(accessToken);
+		} catch (ExpiredJwtException ex) {
+			PrintWriter out = response.getWriter();
+			out.println("Access Token is EXPIRED");
+			response.setStatus(HttpStatus.UNAUTHORIZED.value());
 			return;
 		}
 
-		// 유효한 경우 임시 세션 생성하여 등록
-		String username = jwtUtils.getUsername(jwt);
-		String role = jwtUtils.getRole(jwt);
-		MemberRes member = new MemberRes();
-		member.setUsername(username);
-		member.setRole(role);
+		String tokenCategory = jwtUtils.getCategory(accessToken);
+		if (!tokenCategory.equals("access")) {
+			PrintWriter out = response.getWriter();
+			out.println("Access Token is INVALID");
+			response.setStatus(HttpStatus.UNAUTHORIZED.value());
+			return;
+		}
 
-		CustomUserDetails userDetails = new CustomUserDetails(member);
+		String username = jwtUtils.getUsername(accessToken);
+		String role = jwtUtils.getRole(accessToken);
+		AuthorizedUser user = new AuthorizedUser();
+		user.setUsername(username);
+		user.setRole(role);
+
+		CustomUserDetails userDetails = new CustomUserDetails(user);
 		Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 		filterChain.doFilter(request, response);

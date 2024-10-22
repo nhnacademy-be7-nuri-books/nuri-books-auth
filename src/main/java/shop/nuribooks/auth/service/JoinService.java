@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 
 import shop.nuribooks.auth.common.feign.MemberFeignClient;
 import shop.nuribooks.auth.dto.MemberCreateReq;
-import shop.nuribooks.auth.dto.MemberRes;
+import shop.nuribooks.auth.dto.AuthorizedUser;
 
 @Service
 public class JoinService {
@@ -20,7 +20,7 @@ public class JoinService {
 	}
 
 	public void join(MemberCreateReq req) {
-		MemberRes member = memberFeignClient.findByUsername(req.getUsername());
+		AuthorizedUser member = memberFeignClient.findByUsername(req.getUsername());
 		if (member != null) {
 			return;
 		}

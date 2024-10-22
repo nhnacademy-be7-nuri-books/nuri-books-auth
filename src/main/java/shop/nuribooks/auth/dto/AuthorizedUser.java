@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class MemberRes {
+public class AuthorizedUser {
 	private String username;
 	private String password;
 	private String role;

@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 
 import shop.nuribooks.auth.common.feign.MemberFeignClient;
 import shop.nuribooks.auth.dto.CustomUserDetails;
-import shop.nuribooks.auth.dto.MemberRes;
+import shop.nuribooks.auth.dto.AuthorizedUser;
 
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
@@ -19,7 +19,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		MemberRes member = memberFeignClient.findByUsername(username);
+		AuthorizedUser member = memberFeignClient.findByUsername(username);
 		if (member != null) {
 			return new CustomUserDetails(member);
 		}
