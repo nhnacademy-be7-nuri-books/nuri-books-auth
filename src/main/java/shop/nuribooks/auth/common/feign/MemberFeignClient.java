@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-import shop.nuribooks.auth.dto.MemberCreateReq;
+import shop.nuribooks.auth.dto.MemberCreateRequest;
 import shop.nuribooks.auth.dto.AuthorizedUser;
 
 // TODO: 임시 API에 대하여 통신 중, 추후 url 및 API Spec에 따라 수정 예정
@@ -16,5 +16,5 @@ public interface MemberFeignClient {
 	AuthorizedUser findByUsername(@PathVariable("username") String username);
 
 	@PostMapping("/register")
-	void registerMember(@RequestBody MemberCreateReq req);
+	void registerMember(@RequestBody MemberCreateRequest req);
 }

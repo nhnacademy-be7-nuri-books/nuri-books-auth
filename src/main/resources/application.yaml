@@ -1,12 +1,14 @@
+server:
+  port: 8081
 spring:
   application:
     name: auth
   jwt:
     secret: sksmsdydxordldiznjzkfkrhehqnfflwleprtmdkslazzxortmdlazztrdyddlrjsqlalfqjsghdia
   datasource:
-    url: jdbc:mysql://localhost:3306/security?useSSL=false&serverTimezone=UTC
-    username: root
-    password: 940504
+    url: jdbc:mysql://133.186.241.167:3306/project_be7_nuribooks_dev?useSSL=false&serverTimezone=UTC
+    username: be7_nuribooks
+    password: '@f3hgB7jc@KvWJQZ'
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:

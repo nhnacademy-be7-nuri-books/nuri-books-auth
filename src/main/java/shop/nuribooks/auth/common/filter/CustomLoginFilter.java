@@ -22,7 +22,7 @@ import shop.nuribooks.auth.common.util.CookieUtils;
 import shop.nuribooks.auth.common.util.JwtUtils;
 import shop.nuribooks.auth.common.util.RefreshUtils;
 import shop.nuribooks.auth.dto.CustomUserDetails;
-import shop.nuribooks.auth.dto.LoginReq;
+import shop.nuribooks.auth.dto.LoginRequest;
 import shop.nuribooks.auth.repository.RefreshRepository;
 
 public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
@@ -35,23 +35,24 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
 		this.authenticationManager = authenticationManager;
 		this.refreshRepository = refreshRepository;
 		this.jwtUtils = jwtUtils;
+		setFilterProcessesUrl("/api/login");
 	}
 
 	@Override
 	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws
 		AuthenticationException {
-		LoginReq loginReq = null;
+		LoginRequest loginRequest = null;
 		try {
 			ObjectMapper objectMapper = new ObjectMapper();
 			ServletInputStream in = request.getInputStream();
 			String messageBody = StreamUtils.copyToString(in, StandardCharsets.UTF_8);
-			loginReq = objectMapper.readValue(messageBody, LoginReq.class);
+			loginRequest = objectMapper.readValue(messageBody, LoginRequest.class);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
 
-		String username = loginReq.getUsername();
-		String password = loginReq.getPassword();
+		String username = loginRequest.getUsername();
+		String password = loginRequest.getPassword();
 		UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(username, password);
 
 		return authenticationManager.authenticate(token);
