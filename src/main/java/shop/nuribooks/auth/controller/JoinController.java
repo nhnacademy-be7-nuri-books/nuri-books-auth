@@ -18,7 +18,7 @@ public class JoinController {
 		this.joinService = joinService;
 	}
 
-	@PostMapping("/join")
+	@PostMapping("/api/join")
 	public String join(@RequestBody MemberCreateRequest req) {
 		joinService.join(req);
 		return "ok";

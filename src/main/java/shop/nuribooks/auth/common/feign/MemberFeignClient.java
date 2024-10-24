@@ -10,7 +10,7 @@ import shop.nuribooks.auth.dto.MemberCreateRequest;
 import shop.nuribooks.auth.dto.AuthorizedUser;
 
 // TODO: 임시 API에 대하여 통신 중, 추후 url 및 API Spec에 따라 수정 예정
-@FeignClient(name = "memberFeignClient", url = "http://localhost:9090/member")
+@FeignClient(name = "memberFeignClient", url = "http://localhost:8082/member")
 public interface MemberFeignClient {
 	@GetMapping("/{username}")
 	AuthorizedUser findByUsername(@PathVariable("username") String username);

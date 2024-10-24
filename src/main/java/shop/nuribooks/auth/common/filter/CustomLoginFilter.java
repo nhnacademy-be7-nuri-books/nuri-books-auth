@@ -2,8 +2,12 @@ package shop.nuribooks.auth.common.filter;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -35,7 +39,7 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
 		this.authenticationManager = authenticationManager;
 		this.refreshRepository = refreshRepository;
 		this.jwtUtils = jwtUtils;
-		setFilterProcessesUrl("/api/login");
+		setFilterProcessesUrl("/api/auth/login");
 	}
 
 	@Override
@@ -53,6 +57,7 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
 
 		String username = loginRequest.getUsername();
 		String password = loginRequest.getPassword();
+
 		UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(username, password);
 
 		return authenticationManager.authenticate(token);
@@ -67,7 +72,7 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
 
 		String accessToken = jwtUtils.createJwt("access", username, role, 60 * 60 * 1000L);
 		String refreshToken = jwtUtils.createJwt("refresh", username, role, 60 * 60 * 3000L);
-		response.addHeader("access", accessToken);
+		response.addHeader("Authorization", accessToken);
 		response.addCookie(CookieUtils.createCookie("refresh", refreshToken));
 		RefreshUtils.addRefreshToken(refreshRepository, username, refreshToken, 60 * 60 * 3000L);
 		response.setStatus(HttpStatus.OK.value());
