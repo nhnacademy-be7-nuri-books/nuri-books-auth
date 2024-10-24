@@ -1,5 +1,8 @@
 package shop.nuribooks.auth.common.config;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -11,6 +14,9 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import shop.nuribooks.auth.common.filter.CustomLoginFilter;
 import shop.nuribooks.auth.common.filter.JwtFilter;
@@ -58,7 +64,6 @@ public class SecurityConfig {
 
 		http
 			.addFilterAt(new CustomLoginFilter(authenticationManager, jwtUtils, refreshRepository), UsernamePasswordAuthenticationFilter.class);
-
 
 		return http.build();
 	}
