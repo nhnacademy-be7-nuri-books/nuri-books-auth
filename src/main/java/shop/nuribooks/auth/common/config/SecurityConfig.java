@@ -1,6 +1,7 @@
 package shop.nuribooks.auth.common.config;
 
 import java.io.IOException;
+import java.util.Collections;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -8,6 +9,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.AuthenticationException;
@@ -19,6 +21,8 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -53,6 +57,21 @@ public class SecurityConfig {
 					}
 				}));
 
+		http
+			.cors(cors -> cors
+				.configurationSource(new CorsConfigurationSource() {
+					@Override
+					public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
+						CorsConfiguration configuration = new CorsConfiguration();
+						configuration.setAllowedOrigins(Collections.singletonList("http://localhost:3000"));	// client가 접근하는 URL
+						configuration.setAllowedMethods(Collections.singletonList("*"));
+						configuration.setAllowCredentials(true);	// cookie 포함
+						configuration.setAllowedHeaders(Collections.singletonList("*"));
+						configuration.setExposedHeaders(Collections.singletonList("Authorization"));
+						configuration.setMaxAge(60 * 60L);
+						return configuration;
+					}
+				}));
 
 		http
 			.csrf(AbstractHttpConfigurer::disable);
@@ -97,5 +116,10 @@ public class SecurityConfig {
 			.build();
 
 		return new InMemoryUserDetailsManager(admin, user);
+	}
+
+	@Bean
+	public WebSecurityCustomizer webSecurityCustomizer() {
+		return web -> web.ignoring().requestMatchers("/favicon.ico", "/static/**");
 	}
 }
