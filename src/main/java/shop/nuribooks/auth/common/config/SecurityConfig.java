@@ -1,5 +1,7 @@
 package shop.nuribooks.auth.common.config;
 
+import java.io.IOException;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -8,15 +10,21 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import shop.nuribooks.auth.common.filter.CustomLoginFilter;
+import shop.nuribooks.auth.common.filter.JwtFilter;
 import shop.nuribooks.auth.common.util.JwtUtils;
 
 @Configuration
@@ -35,6 +43,16 @@ public class SecurityConfig {
 
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http, AuthenticationManager authenticationManager, JwtUtils jwtUtils) throws Exception {
+		http
+			.exceptionHandling(exception -> exception
+				.authenticationEntryPoint(new AuthenticationEntryPoint() {
+					@Override
+					public void commence(HttpServletRequest request, HttpServletResponse response,
+						AuthenticationException authException) throws IOException, ServletException {
+						response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+					}
+				}));
+
 
 		http
 			.csrf(AbstractHttpConfigurer::disable);
@@ -48,11 +66,15 @@ public class SecurityConfig {
 		http
 			.authorizeHttpRequests(auth -> auth
 				.requestMatchers("/", "/login").permitAll()
+				.requestMatchers("/admin").hasRole("ADMIN")
 				.anyRequest().authenticated());
 
 		http
 			.sessionManagement(session -> session
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+
+		http
+			.addFilterBefore(new JwtFilter(jwtUtils), CustomLoginFilter.class);
 
 		http
 			.addFilterAt(new CustomLoginFilter(authenticationManager, jwtUtils), UsernamePasswordAuthenticationFilter.class);

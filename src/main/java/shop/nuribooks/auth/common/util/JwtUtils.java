@@ -55,7 +55,7 @@ public class JwtUtils {
 		} catch (Exception ex) {
 			log.info("만료기한을 가져오는데 실패하였습니다.");
 		}
-		return null;
+		return true;
 	}
 
 	public String createJwt(String tokenType, String username, String role, Long expiredMs) {
@@ -63,7 +63,7 @@ public class JwtUtils {
 			.claim("tokenType", tokenType)
 			.claim("username", username)
 			.claim("role", role)
-			.issuedAt(new Date())
+			.issuedAt(new Date(System.currentTimeMillis()))
 			.expiration(new Date(System.currentTimeMillis() + expiredMs))
 			.claim("issuer", jwtProperties.getIssuer())
 			.signWith(secretKey)
