@@ -30,6 +30,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import shop.nuribooks.auth.common.filter.CustomLoginFilter;
 import shop.nuribooks.auth.common.filter.JwtFilter;
 import shop.nuribooks.auth.common.util.JwtUtils;
+import shop.nuribooks.auth.repository.RefreshTokenRepository;
 
 @Configuration
 @EnableWebSecurity
@@ -46,7 +47,7 @@ public class SecurityConfig {
 	}
 
 	@Bean
-	public SecurityFilterChain securityFilterChain(HttpSecurity http, AuthenticationManager authenticationManager, JwtUtils jwtUtils) throws Exception {
+	public SecurityFilterChain securityFilterChain(HttpSecurity http, AuthenticationManager authenticationManager, JwtUtils jwtUtils, RefreshTokenRepository refreshTokenRepository) throws Exception {
 		http
 			.exceptionHandling(exception -> exception
 				.authenticationEntryPoint(new AuthenticationEntryPoint() {
@@ -96,7 +97,7 @@ public class SecurityConfig {
 			.addFilterBefore(new JwtFilter(jwtUtils), CustomLoginFilter.class);
 
 		http
-			.addFilterAt(new CustomLoginFilter(authenticationManager, jwtUtils), UsernamePasswordAuthenticationFilter.class);
+			.addFilterAt(new CustomLoginFilter(authenticationManager, jwtUtils, refreshTokenRepository), UsernamePasswordAuthenticationFilter.class);
 
 		return http.build();
 	}

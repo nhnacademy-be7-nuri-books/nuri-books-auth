@@ -1,6 +1,7 @@
 package shop.nuribooks.auth.common.filter;
 
 import java.io.IOException;
+import java.util.Date;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -17,15 +18,19 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import shop.nuribooks.auth.common.util.CookieUtils;
 import shop.nuribooks.auth.common.util.JwtUtils;
+import shop.nuribooks.auth.entity.RefreshToken;
+import shop.nuribooks.auth.repository.RefreshTokenRepository;
 
 @Slf4j
 public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
 	private final AuthenticationManager authenticationManager;
+	private final RefreshTokenRepository refreshTokenRepository;
 	private final JwtUtils jwtUtils;
 
-	public CustomLoginFilter(AuthenticationManager authenticationManager, JwtUtils jwtUtils) {
+	public CustomLoginFilter(AuthenticationManager authenticationManager, JwtUtils jwtUtils, RefreshTokenRepository refreshTokenRepository) {
 		this.authenticationManager = authenticationManager;
 		this.jwtUtils = jwtUtils;
+		this.refreshTokenRepository = refreshTokenRepository;
 	}
 
 	@Override
@@ -41,7 +46,6 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
 	@Override
 	protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain,
 		Authentication authentication) throws IOException, ServletException {
-		log.info("로그인 성공");
 
 		UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 		String username = userDetails.getUsername();
@@ -52,6 +56,8 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
 
 		response.setHeader("Authorization", "Bearer " + accessToken);
 		response.addCookie(CookieUtils.createCookie("Refresh", refreshToken));
+		addRefreshToken(username, accessToken, refreshToken, 60 * 60 * 1000L * 24);
+		log.info("로그인 성공! Refresh Token을 저장하였습니다.");
 		response.setStatus(HttpStatus.OK.value());
 	}
 
@@ -60,5 +66,14 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
 		AuthenticationException failed) throws IOException, ServletException {
 		log.info("로그인 실패");
 		response.setStatus(HttpStatus.BAD_REQUEST.value());
+	}
+
+	private void addRefreshToken(String username, String accessToken, String refreshToken, Long expiredMs) {
+		RefreshToken refresh = new RefreshToken();
+		refresh.setUsername(username);
+		refresh.setAccessToken(accessToken);
+		refresh.setRefreshToken(refreshToken);
+		refresh.setExpiration(new Date(System.currentTimeMillis() + expiredMs).toString());
+		refreshTokenRepository.save(refresh);
 	}
 }
