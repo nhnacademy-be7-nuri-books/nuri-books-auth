@@ -11,13 +11,17 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletInputStream;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import shop.nuribooks.auth.common.util.CookieUtils;
 import shop.nuribooks.auth.common.util.JwtUtils;
+import shop.nuribooks.auth.dto.LoginRequest;
 import shop.nuribooks.auth.entity.RefreshToken;
 import shop.nuribooks.auth.repository.RefreshTokenRepository;
 
@@ -37,8 +41,22 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
 	@Override
 	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws
 		AuthenticationException {
-		String username = obtainUsername(request);
-		String password = obtainPassword(request);
+		// form 요청 기반
+		// String username = obtainUsername(request);
+		// String password = obtainPassword(request);
+
+		ObjectMapper objectMapper = new ObjectMapper();
+		LoginRequest loginRequest = null;
+		try {
+			 loginRequest = objectMapper.readValue(request.getInputStream(), LoginRequest.class);
+		} catch (Exception e) {
+			log.info("로그인 요청 정보를 가져오는데 실패하였습니다.");
+			return null;
+		}
+
+		String username = loginRequest.getUsername();
+		String password = loginRequest.getPassword();
+
 		log.info("로그인 시도 : {}/{}", username, password);
 		UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(username, password, null);
 		return authenticationManager.authenticate(token);
