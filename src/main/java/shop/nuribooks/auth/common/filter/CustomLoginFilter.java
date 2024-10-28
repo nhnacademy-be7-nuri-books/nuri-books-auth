@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Date;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -83,19 +84,20 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
 
 		// TODO: login 요청 성공 후
 		// JSON 응답을 반환하도록 변경
-		response.setContentType("application/json");
-		response.getWriter().write("{\"message\":\"Login successful\"}");
-		response.setStatus(HttpStatus.OK.value());
+		ResponseEntity<String> responseEntity = ResponseEntity.ok("{\"message\":\"Login successful\"}");
+		response.setStatus(responseEntity.getStatusCodeValue());
+		response.getWriter().write(responseEntity.getBody());
 	}
 
 	@Override
 	protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response,
 		AuthenticationException failed) throws IOException, ServletException {
 		log.info("로그인 실패");
-		// JSON 응답을 반환하도록 변경
-		response.setContentType("application/json");
-		response.getWriter().write("{\"message\":\"Login failed\"}");
-		response.setStatus(HttpStatus.UNAUTHORIZED.value());
+		// ResponseEntity를 사용하여 JSON 응답 생성
+		ResponseEntity<String> responseEntity = ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+			.body("{\"message\":\"Login failed\"}");
+		response.setStatus(responseEntity.getStatusCodeValue());
+		response.getWriter().write(responseEntity.getBody());
 	}
 
 	private void addRefreshToken(String username, String accessToken, String refreshToken, Long expiredMs) {

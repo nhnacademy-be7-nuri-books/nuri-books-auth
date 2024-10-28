@@ -110,14 +110,14 @@ public class SecurityConfig {
 	@Bean
 	public UserDetailsService userDetailsService() {
 		UserDetails admin = User.builder()
-			.username("admin")
-			.password(bCryptPasswordEncoder().encode("123"))
+			.username("admin12345")
+			.password(bCryptPasswordEncoder().encode("12345678"))
 			.roles("ADMIN")
 			.build();
 
 		UserDetails user = User.builder()
-			.username("user")
-			.password(bCryptPasswordEncoder().encode("123"))
+			.username("user12345")
+			.password(bCryptPasswordEncoder().encode("12345678"))
 			.roles("USER")
 			.build();
 
