@@ -87,8 +87,7 @@ public class SecurityConfig {
 
 		http
 			.authorizeHttpRequests(auth -> auth
-				.requestMatchers("/", "/api/auth/login", "/api/auth/reissue", "/auth/login").permitAll()
-				.requestMatchers("/admin").hasRole("ADMIN")
+				.requestMatchers("/api/auth/login", "/api/auth/reissue").permitAll()
 				.anyRequest().authenticated());
 
 		http
@@ -105,23 +104,6 @@ public class SecurityConfig {
 			.addFilterAt(new CustomLoginFilter(authenticationManager, jwtUtils, refreshTokenRepository), UsernamePasswordAuthenticationFilter.class);
 
 		return http.build();
-	}
-
-	@Bean
-	public UserDetailsService userDetailsService() {
-		UserDetails admin = User.builder()
-			.username("admin12345")
-			.password(bCryptPasswordEncoder().encode("12345678"))
-			.roles("ADMIN")
-			.build();
-
-		UserDetails user = User.builder()
-			.username("user12345")
-			.password(bCryptPasswordEncoder().encode("12345678"))
-			.roles("USER")
-			.build();
-
-		return new InMemoryUserDetailsManager(admin, user);
 	}
 
 	@Bean

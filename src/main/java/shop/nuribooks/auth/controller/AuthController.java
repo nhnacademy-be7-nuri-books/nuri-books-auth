@@ -16,30 +16,7 @@ import shop.nuribooks.auth.service.AuthService;
 @RestController
 public class AuthController {
 	private final AuthService authService;
-
-	@GetMapping("/")
-	@ResponseBody
-	public String home() {
-		return "index page";
-	}
-
-	@GetMapping("/my")
-	@ResponseBody
-	public String my() {
-		return "my page";
-	}
-
-	@GetMapping("/admin")
-	@ResponseBody
-	public String admin() {
-		return "admin page";
-	}
-
-	@GetMapping("/auth/login")
-	public String login() {
-		return "login page";
-	}
-
+	
 	@PostMapping("/reissue")
 	public ResponseEntity<?> reissue(HttpServletRequest request, HttpServletResponse response) {
 		return authService.reissue(request, response);

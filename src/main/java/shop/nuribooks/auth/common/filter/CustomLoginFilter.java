@@ -10,6 +10,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -22,6 +23,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import shop.nuribooks.auth.common.util.CookieUtils;
 import shop.nuribooks.auth.common.util.JwtUtils;
+import shop.nuribooks.auth.dto.CustomUserDetails;
 import shop.nuribooks.auth.dto.LoginRequest;
 import shop.nuribooks.auth.entity.RefreshToken;
 import shop.nuribooks.auth.repository.RefreshTokenRepository;
@@ -42,10 +44,6 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
 	@Override
 	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws
 		AuthenticationException {
-		// form 요청 기반
-		// String username = obtainUsername(request);
-		// String password = obtainPassword(request);
-
 		// application/json 요청 기반
 		ObjectMapper objectMapper = new ObjectMapper();
 		LoginRequest loginRequest = null;
@@ -58,17 +56,16 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
 
 		String username = loginRequest.username();
 		String password = loginRequest.password();
-
 		log.info("로그인 시도 : {}/{}", username, password);
-		UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(username, password, null);
+
+		UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(username, password);
 		return authenticationManager.authenticate(token);
 	}
 
 	@Override
 	protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain,
 		Authentication authentication) throws IOException, ServletException {
-
-		UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+		CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
 		String username = userDetails.getUsername();
 		String role = userDetails.getAuthorities().iterator().next().getAuthority();
 
