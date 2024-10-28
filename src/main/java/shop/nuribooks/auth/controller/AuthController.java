@@ -14,7 +14,6 @@ import shop.nuribooks.auth.service.AuthService;
 
 @RequiredArgsConstructor
 @RestController
-// @Controller
 public class AuthController {
 	private final AuthService authService;
 

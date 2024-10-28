@@ -40,7 +40,6 @@ public class JwtFilter extends OncePerRequestFilter {
 			return;
 		}
 
-
 		String validAccessToken = accessToken.split(" ")[1];
 		// Access 토큰이 만료된 경우
 		if (jwtUtils.isExpired(validAccessToken)) {

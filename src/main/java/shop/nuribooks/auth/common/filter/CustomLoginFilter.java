@@ -46,8 +46,6 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
 		// String username = obtainUsername(request);
 		// String password = obtainPassword(request);
 
-
-
 		// application/json 요청 기반
 		ObjectMapper objectMapper = new ObjectMapper();
 		LoginRequest loginRequest = null;
@@ -58,8 +56,8 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
 			return null;
 		}
 
-		String username = loginRequest.getUsername();
-		String password = loginRequest.getPassword();
+		String username = loginRequest.username();
+		String password = loginRequest.password();
 
 		log.info("로그인 시도 : {}/{}", username, password);
 		UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(username, password, null);
