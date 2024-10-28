@@ -45,6 +45,9 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
 		// String username = obtainUsername(request);
 		// String password = obtainPassword(request);
 
+
+
+		// application/json 요청 기반
 		ObjectMapper objectMapper = new ObjectMapper();
 		LoginRequest loginRequest = null;
 		try {
@@ -77,6 +80,11 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
 		response.addCookie(CookieUtils.createCookie("Refresh", refreshToken, 60 * 60));
 		addRefreshToken(username, accessToken, refreshToken, 60 * 60 * 1000L * 24);
 		log.info("로그인 성공! Refresh Token을 저장하였습니다.");
+
+		// TODO: login 요청 성공 후
+		// JSON 응답을 반환하도록 변경
+		response.setContentType("application/json");
+		response.getWriter().write("{\"message\":\"Login successful\"}");
 		response.setStatus(HttpStatus.OK.value());
 	}
 
@@ -84,7 +92,10 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
 	protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response,
 		AuthenticationException failed) throws IOException, ServletException {
 		log.info("로그인 실패");
-		response.setStatus(HttpStatus.BAD_REQUEST.value());
+		// JSON 응답을 반환하도록 변경
+		response.setContentType("application/json");
+		response.getWriter().write("{\"message\":\"Login failed\"}");
+		response.setStatus(HttpStatus.UNAUTHORIZED.value());
 	}
 
 	private void addRefreshToken(String username, String accessToken, String refreshToken, Long expiredMs) {
