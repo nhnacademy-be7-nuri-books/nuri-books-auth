@@ -25,7 +25,7 @@ public class AuthService {
 	public ResponseEntity<?> reissue(HttpServletRequest request, HttpServletResponse response) {
 		String refreshToken = CookieUtils.getValue(request, "Refresh");
 
-		if (refreshToken == null) {
+		if (refreshToken == null || refreshToken.isBlank()) {
 			log.info("Refresh Token is NULL");
 			return new ResponseEntity<>("Refresh Token is NULL", HttpStatus.BAD_REQUEST);
 		}
@@ -45,7 +45,7 @@ public class AuthService {
 		String newAccessToken = jwtUtils.createJwt("Access", username, role, 60 * 60 * 200L);
 		String newRefreshToken = jwtUtils.createJwt("Refresh", username, role, 60 * 60 * 1000L * 24);
 		response.setHeader("Authorization", newAccessToken);
-		response.addCookie(CookieUtils.createCookie("Refresh", newRefreshToken));
+		response.addCookie(CookieUtils.createCookie("Refresh", newRefreshToken, 60 * 60));
 		refreshTokenRepository.deleteByRefreshToken(refreshToken);
 		addRefreshToken(username, newAccessToken, newRefreshToken, 60 * 60 * 1000L * 24);
 		log.info("Reissue Completed : Refresh Rotating, Saving New Refresh");

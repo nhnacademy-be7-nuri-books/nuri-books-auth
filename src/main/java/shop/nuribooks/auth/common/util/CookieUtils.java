@@ -4,11 +4,11 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 
 public class CookieUtils {
-	public static Cookie createCookie(String key, String value) {
+	public static Cookie createCookie(String key, String value, int maxAge) {
 		Cookie cookie = new Cookie(key, value);
 		cookie.setPath("/");
 		cookie.setHttpOnly(true);
-		cookie.setMaxAge(60 * 60);
+		cookie.setMaxAge(maxAge);
 		// cookie.setSecure(false);
 		return cookie;
 	}

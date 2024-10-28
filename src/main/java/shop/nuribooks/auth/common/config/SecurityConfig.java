@@ -21,6 +21,7 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 
@@ -28,6 +29,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import shop.nuribooks.auth.common.filter.CustomLoginFilter;
+import shop.nuribooks.auth.common.filter.CustomLogoutFilter;
 import shop.nuribooks.auth.common.filter.JwtFilter;
 import shop.nuribooks.auth.common.util.JwtUtils;
 import shop.nuribooks.auth.repository.RefreshTokenRepository;
@@ -85,13 +87,16 @@ public class SecurityConfig {
 
 		http
 			.authorizeHttpRequests(auth -> auth
-				.requestMatchers("/", "/login", "/reissue").permitAll()
+				.requestMatchers("/", "/api/auth/login", "/api/auth/reissue").permitAll()
 				.requestMatchers("/admin").hasRole("ADMIN")
 				.anyRequest().authenticated());
 
 		http
 			.sessionManagement(session -> session
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+
+		http
+			.addFilterBefore(new CustomLogoutFilter(jwtUtils, refreshTokenRepository), LogoutFilter.class);
 
 		http
 			.addFilterBefore(new JwtFilter(jwtUtils), CustomLoginFilter.class);

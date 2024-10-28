@@ -31,6 +31,7 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
 		this.authenticationManager = authenticationManager;
 		this.jwtUtils = jwtUtils;
 		this.refreshTokenRepository = refreshTokenRepository;
+		setFilterProcessesUrl("/api/auth/login");
 	}
 
 	@Override
@@ -55,7 +56,7 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
 		String refreshToken = jwtUtils.createJwt("Refresh", username, role, 60 * 60 * 1000L * 24);
 
 		response.setHeader("Authorization", "Bearer " + accessToken);
-		response.addCookie(CookieUtils.createCookie("Refresh", refreshToken));
+		response.addCookie(CookieUtils.createCookie("Refresh", refreshToken, 60 * 60));
 		addRefreshToken(username, accessToken, refreshToken, 60 * 60 * 1000L * 24);
 		log.info("로그인 성공! Refresh Token을 저장하였습니다.");
 		response.setStatus(HttpStatus.OK.value());

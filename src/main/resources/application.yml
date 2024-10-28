@@ -15,7 +15,7 @@ spring:
         format_sql: true
         dialect: org.hibernate.dialect.MySQL8Dialect
 server:
-  port: 8080
+  port: 8081
 jwt:
   secret-key: tmvmfldtlzbflxldhodlfjgrpdjfudnsrjdpdywlsWKrmfoehwoalTJdydxor
   issuer: nuribooks-auth
