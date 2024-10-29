@@ -30,7 +30,7 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           port: ${{ secrets.SSH_PORT }}
           source: "target/*.jar"
-          target: "~/books/books.jar"
+          target: "~/books"
           rm: true
 
       - name: execute shell script
@@ -41,4 +41,4 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           port: ${{ secrets.SSH_PORT }}
           script_stop: true
-          script: "./books/startup.sh"
+          script: "./startup.sh 8081 auth"
