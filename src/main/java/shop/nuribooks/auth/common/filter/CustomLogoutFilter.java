@@ -37,7 +37,9 @@ public class CustomLogoutFilter extends GenericFilterBean {
 			return;
 		}
 
-		String refreshToken = CookieUtils.getValue(request, "Refresh");
+		// TODO: 일단 헤더에서 Refresh 추출해서 처리할 것
+		String refreshToken = request.getHeader("Refresh");
+		// String refreshToken = CookieUtils.getValue(request, "Refresh");
 		if (refreshToken == null || refreshToken.isBlank()) {
 			log.info("Refresh Token 없는 유저의 로그아웃 요청입니다.");
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
