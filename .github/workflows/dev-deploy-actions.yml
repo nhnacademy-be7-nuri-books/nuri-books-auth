@@ -27,7 +27,7 @@ jobs:
           key: ${{ secrets.DEV_SSH_KEY }}
           port: ${{ secrets.DEV_SSH_PORT }}
           source: "target/*.jar"
-          target: "~/auth/auth.jar"
+          target: "~/"
           rm: false
 
       - name: execute shell script
