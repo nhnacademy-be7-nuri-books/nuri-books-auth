@@ -73,7 +73,7 @@ public class CustomLogoutFilter extends GenericFilterBean {
 		response.setStatus(HttpServletResponse.SC_OK);
 	}
 
-	public void sendError(HttpServletRequest request, HttpServletResponse response, int statusCode, String message) {
+	private void sendError(HttpServletRequest request, HttpServletResponse response, int statusCode, String message) {
 		response.setStatus(statusCode);
 		response.setContentType("application/json");
 		response.setCharacterEncoding("UTF-8");
