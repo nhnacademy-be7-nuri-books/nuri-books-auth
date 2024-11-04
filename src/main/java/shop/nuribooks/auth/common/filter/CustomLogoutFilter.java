@@ -4,6 +4,8 @@ import java.io.IOException;
 
 import org.springframework.web.filter.GenericFilterBean;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
@@ -12,6 +14,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import shop.nuribooks.auth.common.message.ErrorResponse;
 import shop.nuribooks.auth.common.util.CookieUtils;
 import shop.nuribooks.auth.common.util.JwtUtils;
 import shop.nuribooks.auth.repository.RefreshTokenRepository;
@@ -32,6 +35,7 @@ public class CustomLogoutFilter extends GenericFilterBean {
 	private void doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws
 		ServletException,
 		IOException {
+
 		if (!request.getRequestURI().matches("^/api/auth/logout$") || !request.getMethod().equals("POST")) {
 			filterChain.doFilter(request, response);
 			return;
@@ -40,27 +44,24 @@ public class CustomLogoutFilter extends GenericFilterBean {
 		// TODO: 일단 헤더에서 Refresh 추출해서 처리할 것
 		String refreshToken = request.getHeader("Refresh");
 		// String refreshToken = CookieUtils.getValue(request, "Refresh");
+
 		if (refreshToken == null || refreshToken.isBlank()) {
-			log.info("Refresh Token 없는 유저의 로그아웃 요청입니다.");
-			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			sendError(request, response, HttpServletResponse.SC_BAD_REQUEST, "Refresh Token is NULL or Empty.");;
 			return;
 		}
 
 		if (!jwtUtils.getTokenType(refreshToken).equals("Refresh")) {
-			log.info("Refresh Token이 아닙니다.");
-			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			sendError(request, response, HttpServletResponse.SC_BAD_REQUEST, "Refresh Token is Invalid.");;
 			return;
 		}
 
 		if (jwtUtils.isExpired(refreshToken)) {
-			log.info("이미 완료된 Refresh Token입니다.");
-			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			sendError(request, response, HttpServletResponse.SC_BAD_REQUEST, "Refresh Token is Expired.");;
 			return;
 		}
 
 		if (!refreshTokenRepository.existsByRefreshToken(refreshToken)) {
-			log.info("요청한 Refresh Token은 존재하지 않습니다.");
-			response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+			sendError(request, response, HttpServletResponse.SC_NOT_FOUND, "Refresh Token does not Exist.");;
 			return;
 		}
 
@@ -70,5 +71,17 @@ public class CustomLogoutFilter extends GenericFilterBean {
 		log.info("로그아웃 성공!");
 		response.addCookie(CookieUtils.createCookie("Refresh", null, 0));
 		response.setStatus(HttpServletResponse.SC_OK);
+	}
+
+	private void sendError(HttpServletRequest request, HttpServletResponse response, int statusCode, String message) {
+		response.setStatus(statusCode);
+		response.setContentType("application/json");
+		response.setCharacterEncoding("UTF-8");
+		try {
+			String json = new ObjectMapper().writeValueAsString(new ErrorResponse(statusCode, message, request.getRequestURI()));
+			response.getWriter().write(json);
+		} catch (Exception e) {
+			log.error(e.getMessage());
+		}
 	}
 }

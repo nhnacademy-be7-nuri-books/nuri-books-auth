@@ -30,9 +30,10 @@ public class JwtFilter extends OncePerRequestFilter {
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
 		FilterChain filterChain) throws ServletException, IOException {
 		log.info("JwtFilter를 통과합니다.");
-		// TODO: login 요청인 경우 토큰 유무에 관계 없이 바로 다음 필터로 보내는건 어떨까?
 
+		// TODO: login 요청인 경우 토큰 유무에 관계 없이 바로 다음 필터로 보내는건 어떨까?
 		String accessToken = request.getHeader("Authorization");
+
 		// Access 토큰이 없는 경우
 		if (accessToken == null || accessToken.isBlank() || !accessToken.startsWith("Bearer ")) {
 			log.info("Access Token이 존재하지않습니다.");
