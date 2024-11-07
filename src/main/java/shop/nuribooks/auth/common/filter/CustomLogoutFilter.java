@@ -35,16 +35,12 @@ public class CustomLogoutFilter extends GenericFilterBean {
 	private void doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws
 		ServletException,
 		IOException {
-
 		if (!request.getRequestURI().matches("^/api/auth/logout$") || !request.getMethod().equals("POST")) {
 			filterChain.doFilter(request, response);
 			return;
 		}
 
-		// TODO: 일단 헤더에서 Refresh 추출해서 처리할 것
 		String refreshToken = request.getHeader("Refresh");
-		// String refreshToken = CookieUtils.getValue(request, "Refresh");
-
 		if (refreshToken == null || refreshToken.isBlank()) {
 			sendError(request, response, HttpServletResponse.SC_BAD_REQUEST, "Refresh Token is NULL or Empty.");;
 			return;

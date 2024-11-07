@@ -64,12 +64,12 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
 		String username = userDetails.getUsername();
 		String role = userDetails.getAuthorities().iterator().next().getAuthority();
 
-		String accessToken = jwtUtils.createJwt("Access", username, role, 60 * 60 * 200L);
-		String refreshToken = jwtUtils.createJwt("Refresh", username, role, 60 * 60 * 1000L * 24);
+		String accessToken = jwtUtils.createJwt("Access", username, role, JwtUtils.ACCESS_TOKEN_VALID_TIME);
+		String refreshToken = jwtUtils.createJwt("Refresh", username, role, JwtUtils.REFRESH_TOKEN_VALID_TIME);
 
 		response.setHeader("Authorization", "Bearer " + accessToken);
-		response.addCookie(CookieUtils.createCookie("Refresh", refreshToken, 60 * 60));
-		addRefreshToken(username, accessToken, refreshToken, 60 * 60 * 1000L * 24);
+		response.addCookie(CookieUtils.createCookie("Refresh", refreshToken, CookieUtils.REFRESH_TOKEN_MAX_AGE));
+		addRefreshToken(username, accessToken, refreshToken, JwtUtils.REFRESH_TOKEN_VALID_TIME);
 		log.info("로그인 성공! Refresh Token을 저장하였습니다.");
 
 		ResponseEntity<String> responseEntity = ResponseEntity.ok("{\"message\":\"Login successful.\"}");

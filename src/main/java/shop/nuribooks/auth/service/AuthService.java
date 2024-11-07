@@ -25,7 +25,8 @@ public class AuthService {
 	private final JwtUtils jwtUtils;
 
 	public ResponseEntity<?> reissue(HttpServletRequest request, HttpServletResponse response) {
-		String refreshToken = CookieUtils.getValue(request, "Refresh");
+		// String refreshToken = CookieUtils.getValue(request, "Refresh");
+		String refreshToken = request.getHeader("Refresh");
 
 		if (refreshToken == null || refreshToken.isBlank()) {
 			log.info("Refresh Token is NULL");
