@@ -20,7 +20,7 @@ import shop.nuribooks.auth.repository.RefreshTokenRepository;
 @Slf4j
 @RequiredArgsConstructor
 @Service
-public class AuthService {
+public class ReissueService {
 	private final RefreshTokenRepository refreshTokenRepository;
 	private final JwtUtils jwtUtils;
 
