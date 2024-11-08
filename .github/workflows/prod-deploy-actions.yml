@@ -1,8 +1,8 @@
-name: deploy-actions
+name: prod-deploy-actions
 on:
   push:
     branches:
-      - "main"
+      - main
 
 jobs:
   deploy:
@@ -30,7 +30,7 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           port: ${{ secrets.SSH_PORT }}
           source: "target/*.jar"
-          target: "~/books"
+          target: "~/auth"
           rm: false
 
       - name: execute shell script
@@ -41,4 +41,4 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           port: ${{ secrets.SSH_PORT }}
           script_stop: true
-          script: "./startup.sh 8081 auth"
+          script: "./startup.sh auth 8081 8082"

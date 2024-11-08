@@ -3,24 +3,21 @@ package shop.nuribooks.auth.common.filter;
 import java.io.IOException;
 import java.util.Date;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.ServletInputStream;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import shop.nuribooks.auth.common.message.ErrorResponse;
 import shop.nuribooks.auth.common.util.CookieUtils;
 import shop.nuribooks.auth.common.util.JwtUtils;
 import shop.nuribooks.auth.dto.CustomUserDetails;
@@ -44,16 +41,14 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
 	@Override
 	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws
 		AuthenticationException {
-		// application/json 요청 기반
 		ObjectMapper objectMapper = new ObjectMapper();
 		LoginRequest loginRequest = null;
 		try {
-			 loginRequest = objectMapper.readValue(request.getInputStream(), LoginRequest.class);
-		} catch (Exception e) {
-			log.info("로그인 요청 정보를 가져오는데 실패하였습니다.");
-			return null;
+			loginRequest = objectMapper.readValue(request.getInputStream(), LoginRequest.class);
+		} catch (IOException e) {
+			log.info("Fail to convert to Login Request.");
+			throw new AuthenticationException("Fail to convert to Login Request.") {};
 		}
-
 		String username = loginRequest.username();
 		String password = loginRequest.password();
 		log.info("로그인 시도 : {}/{}", username, password);
@@ -66,20 +61,18 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
 	protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain,
 		Authentication authentication) throws IOException, ServletException {
 		CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-		String username = userDetails.getUsername();
+		String userId = userDetails.getUserId();
 		String role = userDetails.getAuthorities().iterator().next().getAuthority();
 
-		String accessToken = jwtUtils.createJwt("Access", username, role, 60 * 60 * 200L);
-		String refreshToken = jwtUtils.createJwt("Refresh", username, role, 60 * 60 * 1000L * 24);
+		String accessToken = jwtUtils.createJwt("Access", userId, role, JwtUtils.ACCESS_TOKEN_VALID_TIME);
+		String refreshToken = jwtUtils.createJwt("Refresh", userId, role, JwtUtils.REFRESH_TOKEN_VALID_TIME);
 
 		response.setHeader("Authorization", "Bearer " + accessToken);
-		response.addCookie(CookieUtils.createCookie("Refresh", refreshToken, 60 * 60));
-		addRefreshToken(username, accessToken, refreshToken, 60 * 60 * 1000L * 24);
+		response.addCookie(CookieUtils.createCookie("Refresh", refreshToken, CookieUtils.REFRESH_TOKEN_MAX_AGE));
+		addRefreshToken(userId, accessToken, refreshToken, JwtUtils.REFRESH_TOKEN_VALID_TIME);
 		log.info("로그인 성공! Refresh Token을 저장하였습니다.");
 
-		// TODO: login 요청 성공 후
-		// JSON 응답을 반환하도록 변경
-		ResponseEntity<String> responseEntity = ResponseEntity.ok("{\"message\":\"Login successful\"}");
+		ResponseEntity<String> responseEntity = ResponseEntity.ok("{\"message\":\"Login successful.\"}");
 		response.setStatus(responseEntity.getStatusCodeValue());
 		response.getWriter().write(responseEntity.getBody());
 	}
@@ -88,11 +81,15 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
 	protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response,
 		AuthenticationException failed) throws IOException, ServletException {
 		log.info("로그인 실패");
-		// ResponseEntity를 사용하여 JSON 응답 생성
-		ResponseEntity<String> responseEntity = ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-			.body("{\"message\":\"Login failed\"}");
-		response.setStatus(responseEntity.getStatusCodeValue());
-		response.getWriter().write(responseEntity.getBody());
+		ErrorResponse errorResponse = new ErrorResponse(
+			HttpServletResponse.SC_UNAUTHORIZED,
+			"Login failed.",
+			request.getRequestURI()
+		);
+
+		response.setContentType("application/json;charset=UTF-8");
+		response.setStatus(errorResponse.statusCode());
+		response.getWriter().write(new ObjectMapper().writeValueAsString(errorResponse));
 	}
 
 	private void addRefreshToken(String username, String accessToken, String refreshToken, Long expiredMs) {

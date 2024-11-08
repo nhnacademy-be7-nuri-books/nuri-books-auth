@@ -6,6 +6,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
+import shop.nuribooks.auth.common.exception.NotFoundException;
 import shop.nuribooks.auth.common.feign.MemberFeignClient;
 import shop.nuribooks.auth.dto.CustomUserDetails;
 import shop.nuribooks.auth.dto.MemberResponse;
@@ -21,6 +22,6 @@ public class CustomUserDetailsService implements UserDetailsService {
 		if (memberResponse != null) {
 			return new CustomUserDetails(memberResponse);
 		}
-		throw new UsernameNotFoundException("회원 DB에 존재하지 않는 Username입니다.");
+		throw new NotFoundException("회원 DB에 존재하지 않는 username입니다.");
 	}
 }
