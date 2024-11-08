@@ -95,8 +95,7 @@ public class SecurityConfig {
 
 		http
 			.authorizeHttpRequests(auth -> auth
-				.requestMatchers("/api/auth/login", "/api/auth/reissue", "/api/auth/logout").permitAll()
-				.anyRequest().authenticated());
+				.anyRequest().permitAll());
 
 		http
 			.sessionManagement(session -> session
