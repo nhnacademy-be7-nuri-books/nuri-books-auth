@@ -14,6 +14,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Component
 public class JwtUtils {
+	public static final Long ACCESS_TOKEN_VALID_TIME = 60 * 60 * 200L;
+	public static final Long REFRESH_TOKEN_VALID_TIME = 60 * 60 * 1000L * 24;
 	private final SecretKey secretKey;
 	private final JwtProperties jwtProperties;
 
@@ -33,9 +35,9 @@ public class JwtUtils {
 
 	public String getUsername(String token) {
 		try {
-			return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("username", String.class);
+			return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("userId", String.class);
 		} catch (Exception ex) {
-			log.info("Username을 가져오는데 실패하였습니다.");
+			log.info("UserId을 가져오는데 실패하였습니다.");
 		}
 		return null;
 	}
@@ -58,10 +60,10 @@ public class JwtUtils {
 		return true;
 	}
 
-	public String createJwt(String tokenType, String username, String role, Long expiredMs) {
+	public String createJwt(String tokenType, String userId, String role, Long expiredMs) {
 		return Jwts.builder()
 			.claim("tokenType", tokenType)
-			.claim("username", username)
+			.claim("userId", userId)
 			.claim("role", role)
 			.issuedAt(new Date(System.currentTimeMillis()))
 			.expiration(new Date(System.currentTimeMillis() + expiredMs))

@@ -4,6 +4,8 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 
 public class CookieUtils {
+	public static int REFRESH_TOKEN_MAX_AGE = 60 * 60 * 24;
+
 	public static Cookie createCookie(String key, String value, int maxAge) {
 		Cookie cookie = new Cookie(key, value);
 		cookie.setPath("/");
