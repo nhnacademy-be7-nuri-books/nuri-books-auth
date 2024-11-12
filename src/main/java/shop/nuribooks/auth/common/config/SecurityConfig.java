@@ -1,6 +1,7 @@
 package shop.nuribooks.auth.common.config;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collections;
 
 import org.springframework.context.annotation.Bean;
@@ -74,7 +75,14 @@ public class SecurityConfig {
 					public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
 						CorsConfiguration configuration = new CorsConfiguration();
 						// TODO: Front Server 이중화 시, Origins 추가
-						configuration.setAllowedOrigins(Collections.singletonList("http://localhost:3000"));
+						configuration.setAllowedOrigins(Arrays.asList(
+							"http://localhost:3000",
+							"http://localhost:3001",
+							"http://nuribooks.shop",
+							"https://localhost:3000",
+							"https://localhost:3001",
+							"https://nuribooks.shop"
+						));
 						configuration.setAllowedMethods(Collections.singletonList("*"));
 						configuration.setAllowCredentials(true);
 						configuration.setAllowedHeaders(Collections.singletonList("*"));

@@ -9,8 +9,14 @@ public class CorsMvcConfig implements WebMvcConfigurer {
 	@Override
 	public void addCorsMappings(CorsRegistry registry) {
 		registry.addMapping("/**")
-			// TODO: Front Server 이중화 시, Origins 추가
-			.allowedOrigins("http://localhost:3000")
+			.allowedOrigins(
+				"http://localhost:3000",
+				"http://localhost:3001",
+				"http://nuribooks.shop",
+				"https://localhost:3000",
+				"https://localhost:3001",
+				"https://nuribooks.shop"
+			)
 			.allowCredentials(true)
 			.allowedHeaders("*")
 			.allowedMethods("*")
