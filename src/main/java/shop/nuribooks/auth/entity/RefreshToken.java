@@ -17,7 +17,7 @@ public class RefreshToken {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	private String username;
-	private String accessToken;
-	private String refreshToken;
+	private String access;
+	private String refresh;
 	private String expiration;
 }

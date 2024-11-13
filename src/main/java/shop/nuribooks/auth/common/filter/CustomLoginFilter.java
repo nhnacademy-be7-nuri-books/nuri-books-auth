@@ -95,8 +95,8 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
 	private void addRefreshToken(String username, String accessToken, String refreshToken, Long expiredMs) {
 		RefreshToken refresh = new RefreshToken();
 		refresh.setUsername(username);
-		refresh.setAccessToken(accessToken);
-		refresh.setRefreshToken(refreshToken);
+		refresh.setAccess(accessToken);
+		refresh.setRefresh(refreshToken);
 		refresh.setExpiration(new Date(System.currentTimeMillis() + expiredMs).toString());
 		refreshTokenRepository.save(refresh);
 	}
