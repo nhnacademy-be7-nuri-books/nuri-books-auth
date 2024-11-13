@@ -1,0 +1,13 @@
+spring:
+  datasource:
+    url: jdbc:mysql://133.186.241.167:3306/project_be7_nuribooks_prod?useSSL=false&serverTimezone=UTC
+    username: be7_nuribooks
+    password: '@f3hgB7jc@KvWJQZ'
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.MySQL8Dialect

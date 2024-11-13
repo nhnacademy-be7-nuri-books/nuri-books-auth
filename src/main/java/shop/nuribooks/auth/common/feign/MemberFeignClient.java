@@ -9,9 +9,9 @@ import shop.nuribooks.auth.dto.MemberResponse;
 
 @FeignClient(name = "memberFeignClient", url = "http://localhost:8083")
 public interface MemberFeignClient {
-	@GetMapping("/api/member/username/{username}")
+	@GetMapping("/api/members/username/{username}")
 	ResponseEntity<MemberResponse> findByUsername(@PathVariable String username);
 
-	@GetMapping("/api/member/email/{email}")
+	@GetMapping("/api/members/email/{email}")
 	ResponseEntity<MemberResponse> findByEmail(@PathVariable String email);
 }
