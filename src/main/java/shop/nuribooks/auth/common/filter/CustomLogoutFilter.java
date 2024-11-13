@@ -56,12 +56,12 @@ public class CustomLogoutFilter extends GenericFilterBean {
 			return;
 		}
 
-		if (!refreshTokenRepository.existsByRefreshToken(refreshToken)) {
+		if (!refreshTokenRepository.existsByRefresh(refreshToken)) {
 			sendError(request, response, HttpServletResponse.SC_NOT_FOUND, "Refresh Token does not Exist.");;
 			return;
 		}
 
-		refreshTokenRepository.deleteByRefreshToken(refreshToken);
+		refreshTokenRepository.deleteByRefresh(refreshToken);
 
 		// TODO: Access Token의 생명주기가 짧아 front에서만 쿠키를 삭제해도 괜찮을 것 같은데, 아니면 Blacklist 도입할까?
 		log.info("로그아웃 성공!");

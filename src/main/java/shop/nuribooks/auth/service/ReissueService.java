@@ -24,9 +24,11 @@ public class ReissueService {
 	private final RefreshTokenRepository refreshTokenRepository;
 	private final JwtUtils jwtUtils;
 
-	public ResponseEntity<?> reissue(HttpServletRequest request, HttpServletResponse response) {
+	public ResponseEntity<?> reissue(String refreshToken, HttpServletRequest request, HttpServletResponse response) {
 		// String refreshToken = CookieUtils.getValue(request, "Refresh");
-		String refreshToken = request.getHeader("Refresh");
+		// String refreshToken = request.getHeader("Refresh");
+
+		log.info("재발행을 위한 Refresh Token : {}", refreshToken);
 
 		if (refreshToken == null || refreshToken.isBlank()) {
 			log.info("Refresh Token is NULL");
@@ -38,8 +40,11 @@ public class ReissueService {
 			throw new BadRequestException("Refresh Token is Expired.");
 		}
 
-		if (!refreshTokenRepository.existsByRefreshToken(refreshToken)) {
+		RefreshToken findRefresh = refreshTokenRepository.findByRefresh(refreshToken);
+
+		if (!refreshTokenRepository.existsByRefresh(refreshToken)) {
 			log.info("The Refresh Token does not Exist");
+			log.info("Find Refresh : {}", findRefresh);
 			throw new NotFoundException("Refresh Token is NOT EXISTS");
 		}
 
@@ -49,17 +54,19 @@ public class ReissueService {
 		String newRefreshToken = jwtUtils.createJwt("Refresh", username, role, 60 * 60 * 1000L * 24);
 		response.setHeader("Authorization", newAccessToken);
 		response.addCookie(CookieUtils.createCookie("Refresh", newRefreshToken, 60 * 60));
-		refreshTokenRepository.deleteByRefreshToken(refreshToken);
+		refreshTokenRepository.deleteByRefresh(refreshToken);
 		addRefreshToken(username, newAccessToken, newRefreshToken, 60 * 60 * 1000L * 24);
 		log.info("Reissue Completed : Refresh Rotating, Saving New Refresh");
+		log.info("새로 발급한 Access Token : {}", newAccessToken);
+		log.info("새로 발급한 Refresh Token : {}", newRefreshToken);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 
 	private void addRefreshToken(String username, String accessToken, String refreshToken, Long expiredMs) {
 		RefreshToken refresh = new RefreshToken();
 		refresh.setUsername(username);
-		refresh.setAccessToken(accessToken);
-		refresh.setRefreshToken(refreshToken);
+		refresh.setAccess(accessToken);
+		refresh.setRefresh(refreshToken);
 		refresh.setExpiration(new Date(System.currentTimeMillis() + expiredMs).toString());
 		refreshTokenRepository.save(refresh);
 	}
