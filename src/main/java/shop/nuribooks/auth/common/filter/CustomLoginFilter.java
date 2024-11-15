@@ -70,7 +70,7 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
 		response.setHeader("Authorization", "Bearer " + accessToken);
 		response.addCookie(CookieUtils.createCookie("Refresh", refreshToken, CookieUtils.REFRESH_TOKEN_MAX_AGE));
 		addRefreshToken(userId, accessToken, refreshToken, JwtUtils.REFRESH_TOKEN_VALID_TIME);
-		log.info("로그인 성공! Refresh Token을 저장하였습니다.");
+		log.info("로그인 성공 : ({}/enabled: {}), Refresh Token을 저장하였습니다.", userDetails.getUserId(), userDetails.isEnabled());
 
 		ResponseEntity<String> responseEntity = ResponseEntity.ok("{\"message\":\"Login successful.\"}");
 		response.setStatus(responseEntity.getStatusCodeValue());
@@ -95,8 +95,8 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
 	private void addRefreshToken(String username, String accessToken, String refreshToken, Long expiredMs) {
 		RefreshToken refresh = new RefreshToken();
 		refresh.setUsername(username);
-		refresh.setAccessToken(accessToken);
-		refresh.setRefreshToken(refreshToken);
+		refresh.setAccess(accessToken);
+		refresh.setRefresh(refreshToken);
 		refresh.setExpiration(new Date(System.currentTimeMillis() + expiredMs).toString());
 		refreshTokenRepository.save(refresh);
 	}

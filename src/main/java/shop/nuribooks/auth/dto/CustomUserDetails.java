@@ -7,7 +7,9 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @RequiredArgsConstructor
 public class CustomUserDetails implements UserDetails {
 	private final MemberResponse user;
@@ -34,7 +36,6 @@ public class CustomUserDetails implements UserDetails {
 		return user.username();
 	}
 
-	// TODO : 회원 DB에서 해당 계정이 유효한지, 만료되었는지 등 상태 가져와 수정 예정
 	@Override
 	public boolean isAccountNonExpired() {
 		return true;
@@ -52,7 +53,8 @@ public class CustomUserDetails implements UserDetails {
 
 	@Override
 	public boolean isEnabled() {
-		return true;
+		StatusType status = StatusType.fromValue(user.status());
+		return status != null && status != StatusType.WITHDRAWN;
 	}
 
 	public String getUserId() {

@@ -6,8 +6,9 @@ import org.springframework.transaction.annotation.Transactional;
 import shop.nuribooks.auth.entity.RefreshToken;
 
 public interface RefreshTokenRepository extends JpaRepository<RefreshToken, Long> {
-	boolean existsByRefreshToken(String refreshToken);
+	boolean existsByRefresh(String refreshToken);
+	RefreshToken findByRefresh(String refresh);
 
 	@Transactional
-	void deleteByRefreshToken(String refreshToken);
+	void deleteByRefresh(String refreshToken);
 }
