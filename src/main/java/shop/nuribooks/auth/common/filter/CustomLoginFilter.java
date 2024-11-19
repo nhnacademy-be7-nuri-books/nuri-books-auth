@@ -17,6 +17,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import shop.nuribooks.auth.common.feign.MemberFeignClient;
 import shop.nuribooks.auth.common.message.ErrorResponse;
 import shop.nuribooks.auth.common.util.CookieUtils;
 import shop.nuribooks.auth.common.util.JwtUtils;
@@ -29,12 +30,15 @@ import shop.nuribooks.auth.repository.RefreshTokenRepository;
 public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
 	private final AuthenticationManager authenticationManager;
 	private final RefreshTokenRepository refreshTokenRepository;
+	private final MemberFeignClient memberFeignClient;
 	private final JwtUtils jwtUtils;
 
-	public CustomLoginFilter(AuthenticationManager authenticationManager, JwtUtils jwtUtils, RefreshTokenRepository refreshTokenRepository) {
+	public CustomLoginFilter(AuthenticationManager authenticationManager, JwtUtils jwtUtils,
+		RefreshTokenRepository refreshTokenRepository, MemberFeignClient memberFeignClient) {
 		this.authenticationManager = authenticationManager;
 		this.jwtUtils = jwtUtils;
 		this.refreshTokenRepository = refreshTokenRepository;
+		this.memberFeignClient = memberFeignClient;
 		setFilterProcessesUrl("/api/auth/login");
 	}
 
@@ -47,7 +51,8 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
 			loginRequest = objectMapper.readValue(request.getInputStream(), LoginRequest.class);
 		} catch (IOException e) {
 			log.info("Fail to convert to Login Request.");
-			throw new AuthenticationException("Fail to convert to Login Request.") {};
+			throw new AuthenticationException("Fail to convert to Login Request.") {
+			};
 		}
 		String username = loginRequest.username();
 		String password = loginRequest.password();
@@ -60,7 +65,7 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
 	@Override
 	protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain,
 		Authentication authentication) throws IOException, ServletException {
-		CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+		CustomUserDetails userDetails = (CustomUserDetails)authentication.getPrincipal();
 		String userId = userDetails.getUserId();
 		String role = userDetails.getAuthorities().iterator().next().getAuthority();
 
@@ -70,9 +75,11 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
 		response.setHeader("Authorization", "Bearer " + accessToken);
 		response.addCookie(CookieUtils.createCookie("Refresh", refreshToken, CookieUtils.REFRESH_TOKEN_MAX_AGE));
 		addRefreshToken(userId, accessToken, refreshToken, JwtUtils.REFRESH_TOKEN_VALID_TIME);
-		log.info("로그인 성공 : ({}/enabled: {}), Refresh Token을 저장하였습니다.", userDetails.getUserId(), userDetails.isEnabled());
+		log.info("로그인 성공 : ({}/enabled: {}), Refresh Token을 저장하였습니다.", userDetails.getUserId(),
+			userDetails.isEnabled());
 
 		ResponseEntity<String> responseEntity = ResponseEntity.ok("{\"message\":\"Login successful.\"}");
+		memberFeignClient.informLogin(userDetails.getUsername());
 		response.setStatus(responseEntity.getStatusCodeValue());
 		response.getWriter().write(responseEntity.getBody());
 	}
