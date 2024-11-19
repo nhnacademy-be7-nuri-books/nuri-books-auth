@@ -27,6 +27,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import shop.nuribooks.auth.common.feign.MemberFeignClient;
 import shop.nuribooks.auth.common.filter.CustomLoginFilter;
 import shop.nuribooks.auth.common.filter.CustomLogoutFilter;
 import shop.nuribooks.auth.common.filter.JwtFilter;
@@ -49,7 +50,9 @@ public class SecurityConfig {
 	}
 
 	@Bean
-	public SecurityFilterChain securityFilterChain(HttpSecurity http, AuthenticationManager authenticationManager, JwtUtils jwtUtils, RefreshTokenRepository refreshTokenRepository) throws Exception {
+	public SecurityFilterChain securityFilterChain(HttpSecurity http, AuthenticationManager authenticationManager,
+		JwtUtils jwtUtils, RefreshTokenRepository refreshTokenRepository, MemberFeignClient memberFeignClient) throws
+		Exception {
 		http
 			.exceptionHandling(exception -> exception
 				.authenticationEntryPoint(new AuthenticationEntryPoint() {
@@ -116,7 +119,9 @@ public class SecurityConfig {
 			.addFilterBefore(new JwtFilter(jwtUtils), CustomLoginFilter.class);
 
 		http
-			.addFilterAt(new CustomLoginFilter(authenticationManager, jwtUtils, refreshTokenRepository), UsernamePasswordAuthenticationFilter.class);
+			.addFilterAt(
+				new CustomLoginFilter(authenticationManager, jwtUtils, refreshTokenRepository, memberFeignClient),
+				UsernamePasswordAuthenticationFilter.class);
 
 		return http.build();
 	}
