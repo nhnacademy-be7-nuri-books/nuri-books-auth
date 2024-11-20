@@ -25,9 +25,6 @@ public class ReissueService {
 	private final JwtUtils jwtUtils;
 
 	public ResponseEntity<?> reissue(String refreshToken, HttpServletRequest request, HttpServletResponse response) {
-		// String refreshToken = CookieUtils.getValue(request, "Refresh");
-		// String refreshToken = request.getHeader("Refresh");
-
 		log.info("재발행을 위한 Refresh Token : {}", refreshToken);
 
 		if (refreshToken == null || refreshToken.isBlank()) {

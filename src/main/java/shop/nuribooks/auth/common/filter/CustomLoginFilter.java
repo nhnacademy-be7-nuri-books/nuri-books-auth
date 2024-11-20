@@ -51,9 +51,9 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
             loginRequest = objectMapper.readValue(request.getInputStream(), LoginRequest.class);
         } catch (IOException e) {
             log.info("Fail to convert to Login Request.");
-            throw new AuthenticationException("Fail to convert to Login Request.") {
-            };
+            throw new RuntimeException("Fail to convert to Login Request.");
         }
+
         String username = loginRequest.username();
         String password = loginRequest.password();
         log.info("로그인 시도 : {}/{}", username, password);
