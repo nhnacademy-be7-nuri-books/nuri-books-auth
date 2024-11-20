@@ -7,8 +7,9 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 
 import shop.nuribooks.auth.common.exception.BadRequestException;
-import shop.nuribooks.auth.common.exception.UnauthorizedException;
+import shop.nuribooks.auth.common.exception.InactiveUserFoundException;
 import shop.nuribooks.auth.common.exception.NotFoundException;
+import shop.nuribooks.auth.common.exception.UnauthorizedException;
 import shop.nuribooks.auth.common.message.ErrorResponse;
 
 @RestControllerAdvice
@@ -25,6 +26,11 @@ public class GlobalExceptionHandler {
 
 	@ExceptionHandler({UnauthorizedException.class})
 	public ResponseEntity<ErrorResponse> unauthorizedExceptionHandler(UnauthorizedException ex, WebRequest request) {
+		return buildErrorResponse(HttpStatus.UNAUTHORIZED, ex.getMessage(), request);
+	}
+
+	@ExceptionHandler({InactiveUserFoundException.class})
+	public ResponseEntity<ErrorResponse> inactiveUserFoundException(InactiveUserFoundException ex, WebRequest request) {
 		return buildErrorResponse(HttpStatus.UNAUTHORIZED, ex.getMessage(), request);
 	}
 
