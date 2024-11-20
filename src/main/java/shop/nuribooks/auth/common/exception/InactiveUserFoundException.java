@@ -1,7 +1,9 @@
 package shop.nuribooks.auth.common.exception;
 
-public class InactiveUserFoundException extends RuntimeException {
-	public InactiveUserFoundException(String message) {
-		super(message);
-	}
+import org.springframework.security.core.AuthenticationException;
+
+public class InactiveUserFoundException extends AuthenticationException {
+    public InactiveUserFoundException(String message) {
+        super(message);
+    }
 }
