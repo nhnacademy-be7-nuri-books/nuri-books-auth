@@ -57,7 +57,7 @@ public class OAuth2UserService {
 
 	private void successHandler(MemberResponse memberResponse, HttpServletResponse response) throws IOException {
 		String userId = memberResponse.customerId().toString();
-		String role = "ROLE_USER";
+		String role = memberResponse.role();
 
 		String accessToken = jwtUtils.createJwt("Access", userId, role, JwtUtils.ACCESS_TOKEN_VALID_TIME);
 		String refreshToken = jwtUtils.createJwt("Refresh", userId, role, JwtUtils.REFRESH_TOKEN_VALID_TIME);
@@ -65,6 +65,7 @@ public class OAuth2UserService {
 		response.setHeader("Authorization", "Bearer " + accessToken);
 		response.addCookie(CookieUtils.createCookie("Refresh", refreshToken, CookieUtils.REFRESH_TOKEN_MAX_AGE));
 		addRefreshToken(userId, accessToken, refreshToken, JwtUtils.REFRESH_TOKEN_VALID_TIME);
+		memberFeignClient.informLogin(memberResponse.username());
 		log.info("로그인 성공! Refresh Token을 저장하였습니다.");
 	}
 
