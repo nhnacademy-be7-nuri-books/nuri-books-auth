@@ -42,22 +42,26 @@ public class CustomLogoutFilter extends GenericFilterBean {
 
 		String refreshToken = request.getHeader("Refresh");
 		if (refreshToken == null || refreshToken.isBlank()) {
-			sendError(request, response, HttpServletResponse.SC_BAD_REQUEST, "Refresh Token is NULL or Empty.");;
+			sendError(request, response, HttpServletResponse.SC_BAD_REQUEST, "Refresh Token is NULL or Empty.");
+			;
 			return;
 		}
 
 		if (!jwtUtils.getTokenType(refreshToken).equals("Refresh")) {
-			sendError(request, response, HttpServletResponse.SC_BAD_REQUEST, "Refresh Token is Invalid.");;
+			sendError(request, response, HttpServletResponse.SC_BAD_REQUEST, "Refresh Token is Invalid.");
+			;
 			return;
 		}
 
 		if (jwtUtils.isExpired(refreshToken)) {
-			sendError(request, response, HttpServletResponse.SC_BAD_REQUEST, "Refresh Token is Expired.");;
+			sendError(request, response, HttpServletResponse.SC_BAD_REQUEST, "Refresh Token is Expired.");
+			;
 			return;
 		}
 
 		if (!refreshTokenRepository.existsByRefresh(refreshToken)) {
-			sendError(request, response, HttpServletResponse.SC_NOT_FOUND, "Refresh Token does not Exist.");;
+			sendError(request, response, HttpServletResponse.SC_NOT_FOUND, "Refresh Token does not Exist.");
+			;
 			return;
 		}
 
@@ -74,7 +78,8 @@ public class CustomLogoutFilter extends GenericFilterBean {
 		response.setContentType("application/json");
 		response.setCharacterEncoding("UTF-8");
 		try {
-			String json = new ObjectMapper().writeValueAsString(new ErrorResponse(statusCode, message, request.getRequestURI()));
+			String json = new ObjectMapper().writeValueAsString(
+				new ErrorResponse(statusCode, message, request.getRequestURI()));
 			response.getWriter().write(json);
 		} catch (Exception e) {
 			log.error(e.getMessage());
