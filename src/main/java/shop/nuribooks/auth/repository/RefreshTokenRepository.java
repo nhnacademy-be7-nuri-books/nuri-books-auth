@@ -7,6 +7,7 @@ import shop.nuribooks.auth.entity.RefreshToken;
 
 public interface RefreshTokenRepository extends JpaRepository<RefreshToken, Long> {
 	boolean existsByRefresh(String refreshToken);
+
 	RefreshToken findByRefresh(String refresh);
 
 	@Transactional

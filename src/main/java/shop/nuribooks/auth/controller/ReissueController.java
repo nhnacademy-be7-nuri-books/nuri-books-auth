@@ -14,9 +14,10 @@ import shop.nuribooks.auth.service.ReissueService;
 @RestController
 public class ReissueController {
 	private final ReissueService reissueService;
-	
+
 	@PostMapping("/api/auth/reissue")
-	public ResponseEntity<?> reissue(@RequestBody String refreshToken, HttpServletRequest request, HttpServletResponse response) {
+	public ResponseEntity<?> reissue(@RequestBody String refreshToken, HttpServletRequest request,
+		HttpServletResponse response) {
 		return reissueService.reissue(refreshToken, request, response);
 	}
 }
