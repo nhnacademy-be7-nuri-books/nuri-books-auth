@@ -18,6 +18,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import shop.nuribooks.auth.common.exception.InactiveUserFoundException;
+import shop.nuribooks.auth.common.exception.LoginFailedException;
 import shop.nuribooks.auth.common.feign.MemberFeignClient;
 import shop.nuribooks.auth.common.message.ErrorResponse;
 import shop.nuribooks.auth.common.util.CookieUtils;
@@ -53,7 +54,7 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
 			loginRequest = objectMapper.readValue(request.getInputStream(), LoginRequest.class);
 		} catch (IOException e) {
 			log.info("Fail to convert to Login Request.");
-			throw new RuntimeException("Fail to convert to Login Request.");
+			throw new LoginFailedException("Fail to convert to Login Request.");
 		}
 
 		String username = loginRequest.username();
@@ -88,7 +89,7 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
 
 		ResponseEntity<String> responseEntity = ResponseEntity.ok("{\"message\":\"Login successful.\"}");
 		memberFeignClient.informLogin(userDetails.getUsername());
-		response.setStatus(responseEntity.getStatusCodeValue());
+		response.setStatus(responseEntity.getStatusCode().value());
 		response.getWriter().write(responseEntity.getBody());
 	}
 

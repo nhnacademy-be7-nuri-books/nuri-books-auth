@@ -31,7 +31,6 @@ public class JwtFilter extends OncePerRequestFilter {
 		FilterChain filterChain) throws ServletException, IOException {
 		log.info("JwtFilter를 통과합니다.");
 
-		// TODO: login 요청인 경우 토큰 유무에 관계 없이 바로 다음 필터로 보내는건 어떨까?
 		String accessToken = request.getHeader("Authorization");
 
 		// Access 토큰이 없는 경우
@@ -49,10 +48,9 @@ public class JwtFilter extends OncePerRequestFilter {
 			return;
 		}
 
-		// Access 토큰이 유효한 경우 => 로그인 처리
 		String username = jwtUtils.getUsername(validAccessToken);
 		String role = jwtUtils.getRole(validAccessToken);
-		UserDetails userDetails = new User(username, "p@ssW0rd",
+		UserDetails userDetails = new User(username, null,
 			Collections.singleton(new SimpleGrantedAuthority(role)));
 		Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null,
 			userDetails.getAuthorities());

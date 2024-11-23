@@ -22,6 +22,7 @@ import shop.nuribooks.auth.repository.RefreshTokenRepository;
 @Slf4j
 @RequiredArgsConstructor
 public class CustomLogoutFilter extends GenericFilterBean {
+	private static final String REFRESH_TOKEN = "Refresh";
 	private final JwtUtils jwtUtils;
 	private final RefreshTokenRepository refreshTokenRepository;
 
@@ -40,36 +41,31 @@ public class CustomLogoutFilter extends GenericFilterBean {
 			return;
 		}
 
-		String refreshToken = request.getHeader("Refresh");
+		String refreshToken = request.getHeader(REFRESH_TOKEN);
 		if (refreshToken == null || refreshToken.isBlank()) {
 			sendError(request, response, HttpServletResponse.SC_BAD_REQUEST, "Refresh Token is NULL or Empty.");
-			;
 			return;
 		}
 
-		if (!jwtUtils.getTokenType(refreshToken).equals("Refresh")) {
+		if (!jwtUtils.getTokenType(refreshToken).equals(REFRESH_TOKEN)) {
 			sendError(request, response, HttpServletResponse.SC_BAD_REQUEST, "Refresh Token is Invalid.");
-			;
 			return;
 		}
 
 		if (jwtUtils.isExpired(refreshToken)) {
 			sendError(request, response, HttpServletResponse.SC_BAD_REQUEST, "Refresh Token is Expired.");
-			;
 			return;
 		}
 
 		if (!refreshTokenRepository.existsByRefresh(refreshToken)) {
 			sendError(request, response, HttpServletResponse.SC_NOT_FOUND, "Refresh Token does not Exist.");
-			;
 			return;
 		}
 
 		refreshTokenRepository.deleteByRefresh(refreshToken);
 
-		// TODO: Access Token의 생명주기가 짧아 front에서만 쿠키를 삭제해도 괜찮을 것 같은데, 아니면 Blacklist 도입할까?
 		log.info("로그아웃 성공!");
-		response.addCookie(CookieUtils.createCookie("Refresh", null, 0));
+		response.addCookie(CookieUtils.createCookie(REFRESH_TOKEN, null, 0));
 		response.setStatus(HttpServletResponse.SC_OK);
 	}
 
