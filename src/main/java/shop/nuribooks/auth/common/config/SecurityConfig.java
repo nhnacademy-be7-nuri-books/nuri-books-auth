@@ -17,9 +17,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
 
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import shop.nuribooks.auth.common.feign.MemberFeignClient;
 import shop.nuribooks.auth.common.filter.CustomLoginFilter;
@@ -51,21 +49,17 @@ public class SecurityConfig {
 			throw authException;
 		}));
 
-		http.cors(cors -> cors.configurationSource(new CorsConfigurationSource() {
-			@Override
-			public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
-				CorsConfiguration configuration = new CorsConfiguration();
-				// TODO: Front Server 이중화 시, Origins 추가
-				configuration.setAllowedOrigins(
-					Arrays.asList("http://localhost:3000", "http://localhost:3001", "http://nuribooks.shop",
-						"https://localhost:3000", "https://localhost:3001", "https://nuribooks.shop"));
-				configuration.setAllowedMethods(Collections.singletonList("*"));
-				configuration.setAllowCredentials(true);
-				configuration.setAllowedHeaders(Collections.singletonList("*"));
-				configuration.setExposedHeaders(Collections.singletonList("Authorization"));
-				configuration.setMaxAge(60 * 60L);
-				return configuration;
-			}
+		http.cors(cors -> cors.configurationSource(request -> {
+			CorsConfiguration configuration = new CorsConfiguration();
+			configuration.setAllowedOrigins(
+				Arrays.asList("http://localhost:3000", "http://localhost:3001", "http://nuribooks.shop",
+					"https://localhost:3000", "https://localhost:3001", "https://nuribooks.shop"));
+			configuration.setAllowedMethods(Collections.singletonList("*"));
+			configuration.setAllowCredentials(true);
+			configuration.setAllowedHeaders(Collections.singletonList("*"));
+			configuration.setExposedHeaders(Collections.singletonList("Authorization"));
+			configuration.setMaxAge(60 * 60L);
+			return configuration;
 		}));
 
 		http.csrf(AbstractHttpConfigurer::disable);
