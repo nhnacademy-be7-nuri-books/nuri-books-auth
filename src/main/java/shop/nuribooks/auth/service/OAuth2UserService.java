@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import shop.nuribooks.auth.common.exception.LoginFailedException;
 import shop.nuribooks.auth.common.feign.MemberFeignClient;
 import shop.nuribooks.auth.common.util.CookieUtils;
 import shop.nuribooks.auth.common.util.JwtUtils;
@@ -37,7 +38,7 @@ public class OAuth2UserService {
 			try {
 				successHandler(memberResponse, response);
 			} catch (IOException e) {
-				throw new RuntimeException("Login SuccessHandler 중 실패");
+				throw new LoginFailedException("Login SuccessHandler 중 실패");
 			}
 		} else {
 			// OAuth2 ID가 존재하지 않는 경우 => OAuth2 정보 기반으로 간편 회원 가입

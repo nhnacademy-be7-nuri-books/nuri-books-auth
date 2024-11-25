@@ -6,7 +6,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,7 +23,7 @@ public class ReissueService {
 	private final RefreshTokenRepository refreshTokenRepository;
 	private final JwtUtils jwtUtils;
 
-	public ResponseEntity<?> reissue(String refreshToken, HttpServletRequest request, HttpServletResponse response) {
+	public ResponseEntity<Void> reissue(String refreshToken, HttpServletResponse response) {
 		log.info("재발행을 위한 Refresh Token : {}", refreshToken);
 
 		if (refreshToken == null || refreshToken.isBlank()) {
