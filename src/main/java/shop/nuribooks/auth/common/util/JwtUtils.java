@@ -15,7 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Component
 public class JwtUtils {
-	public static final Long ACCESS_TOKEN_VALID_TIME = 60 * 60 * 100L;
+	public static final Long ACCESS_TOKEN_VALID_TIME = 60 * 60 * 250L;
 	public static final Long REFRESH_TOKEN_VALID_TIME = 60 * 60 * 1000L * 5;
 	private final SecretKey secretKey;
 	private final JwtProperties jwtProperties;
