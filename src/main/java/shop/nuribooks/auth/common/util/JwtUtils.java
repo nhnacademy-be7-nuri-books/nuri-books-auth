@@ -1,6 +1,7 @@
 package shop.nuribooks.auth.common.util;
 
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
 import java.util.Date;
 
 import javax.crypto.SecretKey;
@@ -14,8 +15,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Component
 public class JwtUtils {
-	public static final Long ACCESS_TOKEN_VALID_TIME = 60 * 60 * 200L;
-	public static final Long REFRESH_TOKEN_VALID_TIME = 60 * 60 * 1000L * 24;
+	public static final Long ACCESS_TOKEN_VALID_TIME = 60 * 60 * 100L;
+	public static final Long REFRESH_TOKEN_VALID_TIME = 60 * 60 * 1000L * 5;
 	private final SecretKey secretKey;
 	private final JwtProperties jwtProperties;
 
@@ -75,7 +76,8 @@ public class JwtUtils {
 				.parseSignedClaims(token)
 				.getPayload()
 				.getExpiration()
-				.before(new Date());
+				.toInstant()
+				.isBefore(Instant.now());
 		} catch (Exception ex) {
 			log.info("만료기한을 가져오는데 실패하였습니다.");
 		}
@@ -83,12 +85,13 @@ public class JwtUtils {
 	}
 
 	public String createJwt(String tokenType, String userId, String role, Long expiredMs) {
+		Instant now = Instant.now();
 		return Jwts.builder()
 			.claim("tokenType", tokenType)
 			.claim("userId", userId)
 			.claim("role", role)
-			.issuedAt(new Date(System.currentTimeMillis()))
-			.expiration(new Date(System.currentTimeMillis() + expiredMs))
+			.issuedAt(Date.from(now))
+			.expiration(Date.from(now.plusMillis(expiredMs)))
 			.claim("issuer", jwtProperties.getIssuer())
 			.signWith(secretKey)
 			.compact();
