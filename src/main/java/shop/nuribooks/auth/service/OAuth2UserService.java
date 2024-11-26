@@ -1,7 +1,7 @@
 package shop.nuribooks.auth.service;
 
 import java.io.IOException;
-import java.util.Date;
+import java.time.Instant;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -64,7 +64,8 @@ public class OAuth2UserService {
 		String refreshToken = jwtUtils.createJwt("Refresh", userId, role, JwtUtils.REFRESH_TOKEN_VALID_TIME);
 
 		response.setHeader("Authorization", "Bearer " + accessToken);
-		response.addCookie(CookieUtils.createCookie("Refresh", refreshToken, CookieUtils.REFRESH_TOKEN_MAX_AGE));
+		response.addCookie(
+			CookieUtils.createCookie("Refresh", refreshToken, (int)(JwtUtils.REFRESH_TOKEN_VALID_TIME / 1000)));
 		addRefreshToken(userId, accessToken, refreshToken, JwtUtils.REFRESH_TOKEN_VALID_TIME);
 		memberFeignClient.informLogin(memberResponse.username());
 		log.info("로그인 성공! Refresh Token을 저장하였습니다.");
@@ -75,7 +76,7 @@ public class OAuth2UserService {
 		refresh.setUsername(username);
 		refresh.setAccess(accessToken);
 		refresh.setRefresh(refreshToken);
-		refresh.setExpiration(new Date(System.currentTimeMillis() + expiredMs).toString());
+		refresh.setExpiration(Instant.now().plusMillis(expiredMs).toString());
 		refreshTokenRepository.save(refresh);
 	}
 }
