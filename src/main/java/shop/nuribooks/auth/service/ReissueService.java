@@ -46,8 +46,8 @@ public class ReissueService {
 
 		String username = jwtUtils.getUsername(refreshToken);
 		String role = jwtUtils.getRole(refreshToken);
-		String newAccessToken = jwtUtils.createJwt("Access", username, role, 60 * 60 * 200L);
-		String newRefreshToken = jwtUtils.createJwt("Refresh", username, role, 60 * 60 * 1000L * 24);
+		String newAccessToken = jwtUtils.createJwt("Access", username, role, JwtUtils.ACCESS_TOKEN_VALID_TIME);
+		String newRefreshToken = jwtUtils.createJwt("Refresh", username, role, JwtUtils.REFRESH_TOKEN_VALID_TIME);
 		response.setHeader("Authorization", newAccessToken);
 		response.addCookie(CookieUtils.createCookie("Refresh", newRefreshToken, 60 * 60));
 		refreshTokenRepository.deleteByRefresh(refreshToken);
