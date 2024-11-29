@@ -1,5 +1,7 @@
 package shop.nuribooks.auth.service;
 
+import java.util.Objects;
+
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -21,9 +23,12 @@ public class NonMemberService {
 			NonMemberResponse nonMemberResponse = memberFeignClient.findNonMemberByEmail(nonMemberRequest.email())
 				.getBody();
 
-			boolean isValid = bCryptPasswordEncoder.matches(nonMemberRequest.password(), nonMemberResponse.password());
-			if (isValid) {
-				return nonMemberResponse;
+			if (Objects.nonNull(nonMemberResponse)) {
+				boolean isValid = bCryptPasswordEncoder.matches(nonMemberRequest.password(),
+					nonMemberResponse.password());
+				if (isValid) {
+					return nonMemberResponse;
+				}
 			}
 		} catch (FeignException ex) {
 			throw new NotFoundException("찾을 수 없습니다.");

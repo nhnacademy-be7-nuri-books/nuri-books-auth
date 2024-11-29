@@ -1,5 +1,7 @@
 package shop.nuribooks.auth.service;
 
+import java.util.Objects;
+
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -20,7 +22,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		MemberResponse memberResponse = memberFeignClient.findByUsername(username).getBody();
 
-		if (memberResponse.username() == null) {
+		if (Objects.isNull(memberResponse) || Objects.isNull(memberResponse.username())) {
 			throw new InactiveUserFoundException("아이디 또는 비밀번호를 확인하세요");
 		}
 
