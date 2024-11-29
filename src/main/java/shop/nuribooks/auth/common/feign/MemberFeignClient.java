@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import shop.nuribooks.auth.dto.MemberResponse;
 import shop.nuribooks.auth.dto.NonMemberResponse;
 
-@FeignClient(name = "memberFeignClient", url = "http://localhost:8083")
+@FeignClient(name = "books")
 public interface MemberFeignClient {
 	@GetMapping("/api/members/username/{username}")
 	ResponseEntity<MemberResponse> findByUsername(@PathVariable String username);

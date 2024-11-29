@@ -17,7 +17,7 @@ public class CustomUserDetails implements UserDetails {
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		Collection<GrantedAuthority> authorities = new ArrayList<>();
-		authorities.add((GrantedAuthority)() -> user.role());
+		authorities.add((GrantedAuthority)user::role);
 		return authorities;
 	}
 
