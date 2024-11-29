@@ -33,7 +33,7 @@ public class ReissueService {
 			throw new BadRequestException("Refresh Token is NULL or Empty");
 		}
 
-		if (jwtUtils.isExpired(refreshToken)) {
+		if (jwtUtils.isExpired(refreshToken).booleanValue()) {
 			log.info("Refresh Token is EXPIRED");
 			throw new BadRequestException("Refresh Token is Expired.");
 		}

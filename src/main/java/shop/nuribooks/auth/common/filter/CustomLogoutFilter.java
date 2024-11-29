@@ -52,7 +52,7 @@ public class CustomLogoutFilter extends GenericFilterBean {
 			return;
 		}
 
-		if (jwtUtils.isExpired(refreshToken)) {
+		if (jwtUtils.isExpired(refreshToken).booleanValue()) {
 			sendError(request, response, HttpServletResponse.SC_BAD_REQUEST, "Refresh Token is Expired.");
 			return;
 		}
