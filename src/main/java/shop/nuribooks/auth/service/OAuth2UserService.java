@@ -38,12 +38,15 @@ public class OAuth2UserService {
 			log.info("이미 등록된 아이디입니다 : {}", memberResponse.username());
 			try {
 				successHandler(memberResponse, response);
-			} catch (IOException e) {
+			} catch (Exception e) {
 				throw new LoginFailedException("Login SuccessHandler 중 실패");
 			}
 		} else {
 			// OAuth2 ID가 존재하지 않는 경우 => OAuth2 정보 기반으로 간편 회원 가입
-			memberResponse = memberFeignClient.findByEmail(oAuth2User.email()).getBody();
+			ResponseEntity<MemberResponse> responseEntityMember = memberFeignClient.findByEmail(oAuth2User.email());
+			if (responseEntityMember != null && responseEntityMember.getBody() != null) {
+				memberResponse = memberFeignClient.findByEmail(oAuth2User.email()).getBody();
+			}
 			if (memberResponse != null && memberResponse.customerId() != null) {
 				// OAuth2로 가입하려는 email이 이미 등록된 경우 => 가입 불가
 				log.info("해당 이메일이 이미 존재합니다 : {}", memberResponse.username());
@@ -58,18 +61,24 @@ public class OAuth2UserService {
 	}
 
 	private void successHandler(MemberResponse memberResponse, HttpServletResponse response) throws IOException {
-		String userId = memberResponse.customerId().toString();
-		String role = memberResponse.role();
+		try {
+			String userId = memberResponse.customerId().toString();
+			String role = memberResponse.role();
 
-		String accessToken = jwtUtils.createJwt("Access", userId, role, JwtUtils.ACCESS_TOKEN_VALID_TIME);
-		String refreshToken = jwtUtils.createJwt("Refresh", userId, role, JwtUtils.REFRESH_TOKEN_VALID_TIME);
+			String accessToken = jwtUtils.createJwt("Access", userId, role, JwtUtils.ACCESS_TOKEN_VALID_TIME);
+			String refreshToken = jwtUtils.createJwt("Refresh", userId, role, JwtUtils.REFRESH_TOKEN_VALID_TIME);
 
-		response.setHeader("Authorization", "Bearer " + accessToken);
-		response.addCookie(
-			CookieUtils.createCookie("Refresh", refreshToken, (int)(JwtUtils.REFRESH_TOKEN_VALID_TIME / 1000)));
-		addRefreshToken(userId, accessToken, refreshToken, JwtUtils.REFRESH_TOKEN_VALID_TIME);
-		memberFeignClient.informLogin(memberResponse.username());
-		log.info("로그인 성공! Refresh Token을 저장하였습니다.");
+			response.setHeader("Authorization", "Bearer " + accessToken);
+			response.addCookie(
+					CookieUtils.createCookie("Refresh", refreshToken, (int) (JwtUtils.REFRESH_TOKEN_VALID_TIME / 1000))
+			);
+			addRefreshToken(userId, accessToken, refreshToken, JwtUtils.REFRESH_TOKEN_VALID_TIME);
+			memberFeignClient.informLogin(memberResponse.username());
+			log.info("로그인 성공! Refresh Token을 저장하였습니다.");
+		} catch (RuntimeException e) {
+			log.error("OAuth2 SuccessHandler 처리 중 오류 발생: ", e);
+			throw new LoginFailedException("Login SuccessHandler 중 실패");
+		}
 	}
 
 	private void addRefreshToken(String username, String accessToken, String refreshToken, Long expiredMs) {

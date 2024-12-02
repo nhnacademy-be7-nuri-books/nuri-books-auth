@@ -67,4 +67,29 @@ class CustomUserDetailsServiceTest {
         // when & then
         assertThrows(InactiveUserFoundException.class, () -> customUserDetailsService.loadUserByUsername(username));
     }
+
+    @Test
+    public void testLoadUserByUsername_WhenMemberResponseIsNull() {
+        // Given
+        String username = "test_user";
+        when(memberFeignClient.findByUsername(username)).thenReturn(ResponseEntity.ok(null));
+
+        // When & Then
+        InactiveUserFoundException exception = assertThrows(InactiveUserFoundException.class,
+                () -> customUserDetailsService.loadUserByUsername(username));
+        assertEquals("아이디 또는 비밀번호를 확인하세요", exception.getMessage());
+    }
+
+    @Test
+    public void testLoadUserByUsername_WhenMemberResponseUsernameIsNull() {
+        // Given
+        String username = "test_user";
+        MemberResponse memberResponse = new MemberResponse(null, "password", "USER", 123L, "ACTIVE");
+        when(memberFeignClient.findByUsername(username)).thenReturn(ResponseEntity.ok(memberResponse));
+
+        // When & Then
+        InactiveUserFoundException exception = assertThrows(InactiveUserFoundException.class,
+                () -> customUserDetailsService.loadUserByUsername(username));
+        assertEquals("아이디 또는 비밀번호를 확인하세요", exception.getMessage());
+    }
 }
