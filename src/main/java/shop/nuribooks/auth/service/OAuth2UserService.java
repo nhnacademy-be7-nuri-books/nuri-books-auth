@@ -32,7 +32,8 @@ public class OAuth2UserService {
 		log.info("제공한 OAuth2User : {}", oAuth2User);
 		log.info("ID로 조회한 memberResponse : {}", memberResponse);
 
-		if (memberResponse.customerId() != null) {
+
+		if (memberResponse != null && memberResponse.customerId() != null) {
 			// OAuth2 ID가 이미 등록된 경우 => 로그인 처리 (토큰 발급)
 			log.info("이미 등록된 아이디입니다 : {}", memberResponse.username());
 			try {
@@ -43,7 +44,7 @@ public class OAuth2UserService {
 		} else {
 			// OAuth2 ID가 존재하지 않는 경우 => OAuth2 정보 기반으로 간편 회원 가입
 			memberResponse = memberFeignClient.findByEmail(oAuth2User.email()).getBody();
-			if (memberResponse.customerId() != null) {
+			if (memberResponse != null && memberResponse.customerId() != null) {
 				// OAuth2로 가입하려는 email이 이미 등록된 경우 => 가입 불가
 				log.info("해당 이메일이 이미 존재합니다 : {}", memberResponse.username());
 				return ResponseEntity.status(HttpStatus.OK).body("ALREADY_EXISTS");
