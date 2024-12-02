@@ -26,6 +26,10 @@ public class CustomUserDetailsService implements UserDetailsService {
 			throw new InactiveUserFoundException("아이디 또는 비밀번호를 확인하세요");
 		}
 
+		if ("INACTIVE".equals(memberResponse.status())) {
+			throw new InactiveUserFoundException("해당 아이디는 휴면 계정입니다.");
+		}
+
 		return new CustomUserDetails(memberResponse);
 	}
 }
