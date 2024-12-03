@@ -111,4 +111,43 @@ class CustomUserDetailsTest {
         // Then
         assertEquals(StatusType.INACTIVE, status);
     }
+
+    @Test
+    void testIsAccountNonExpired() {
+        // Given
+        MemberResponse mockResponse = Mockito.mock(MemberResponse.class);
+        CustomUserDetails userDetails = new CustomUserDetails(mockResponse);
+
+        // When
+        boolean accountNonExpired = userDetails.isAccountNonExpired();
+
+        // Then
+        assertTrue(accountNonExpired);
+    }
+
+    @Test
+    void testIsAccountNonLocked() {
+        // Given
+        MemberResponse mockResponse = Mockito.mock(MemberResponse.class);
+        CustomUserDetails userDetails = new CustomUserDetails(mockResponse);
+
+        // When
+        boolean accountNonLocked = userDetails.isAccountNonLocked();
+
+        // Then
+        assertTrue(accountNonLocked);
+    }
+
+    @Test
+    void testIsCredentialsNonExpired() {
+        // Given
+        MemberResponse mockResponse = Mockito.mock(MemberResponse.class);
+        CustomUserDetails userDetails = new CustomUserDetails(mockResponse);
+
+        // When
+        boolean credentialsNonExpired = userDetails.isCredentialsNonExpired();
+
+        // Then
+        assertTrue(credentialsNonExpired);
+    }
 }
