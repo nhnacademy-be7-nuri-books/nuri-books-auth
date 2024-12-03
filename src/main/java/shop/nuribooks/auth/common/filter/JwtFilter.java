@@ -29,33 +29,30 @@ public class JwtFilter extends OncePerRequestFilter {
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
 		FilterChain filterChain) throws ServletException, IOException {
-		log.info("JwtFilter를 통과합니다.");
-
 		String accessToken = request.getHeader("Authorization");
 
-		// Access 토큰이 없는 경우
-		if (accessToken == null || accessToken.isBlank() || !accessToken.startsWith("Bearer ")) {
-			log.info("Access Token이 존재하지않습니다.");
+		if (accessToken == null || !accessToken.startsWith("Bearer ")) {
 			filterChain.doFilter(request, response);
 			return;
 		}
 
 		String validAccessToken = accessToken.split(" ")[1];
-		// Access 토큰이 만료된 경우
-		if (jwtUtils.isExpired(validAccessToken).booleanValue()) {
-			log.info("Access Token이 만료되었습니다. 재발급받으십시오.");
+		if (jwtUtils.isExpired(validAccessToken)) {
 			filterChain.doFilter(request, response);
 			return;
 		}
 
 		String username = jwtUtils.getUsername(validAccessToken);
 		String role = jwtUtils.getRole(validAccessToken);
-		UserDetails userDetails = new User(username, null,
-			Collections.singleton(new SimpleGrantedAuthority(role)));
-		Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null,
-			userDetails.getAuthorities());
+		if (username == null || role == null) {
+			filterChain.doFilter(request, response);
+			return;
+		}
+
+		UserDetails userDetails = new User(username, "", Collections.singleton(new SimpleGrantedAuthority(role)));
+		Authentication authentication = new UsernamePasswordAuthenticationToken(
+				userDetails, null, userDetails.getAuthorities());
 		SecurityContextHolder.getContext().setAuthentication(authentication);
-		log.info("Access Token이 유효하여 자동 로그인 처리되었습니다. : {}/{}", userDetails.getUsername(), userDetails.getPassword());
 		filterChain.doFilter(request, response);
 	}
 }
