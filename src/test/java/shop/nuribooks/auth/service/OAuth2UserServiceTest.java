@@ -39,13 +39,13 @@ public class OAuth2UserServiceTest {
     private OAuth2UserService oAuth2UserService;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         MockitoAnnotations.openMocks(this);
         oAuth2UserService = new OAuth2UserService(memberFeignClient, refreshTokenRepository, jwtUtils);
     }
 
     @Test
-    public void testLogin_WhenUserAlreadyRegistered() throws IOException {
+    void testLogin_WhenUserAlreadyRegistered() throws IOException {
         // Given
         OAuth2User oAuth2User = new OAuth2User("user_id", "user_email@test.com");
         MemberResponse memberResponse = new MemberResponse("user_id", "user_password", "USER", 123L, "ACTIVE");
@@ -62,7 +62,7 @@ public class OAuth2UserServiceTest {
     }
 
     @Test
-    public void testLogin_WhenEmailExistsButNotRegistered() {
+    void testLogin_WhenEmailExistsButNotRegistered() {
         // Given
         OAuth2User oAuth2User = new OAuth2User("user_id", "user_email@test.com");
         MemberResponse memberResponse = new MemberResponse("user_id", "user_password", "USER", 123L, "ACTIVE");
@@ -79,7 +79,7 @@ public class OAuth2UserServiceTest {
     }
 
     @Test
-    public void testLogin_WhenUserNotRegistered() {
+    void testLogin_WhenUserNotRegistered() {
         // Given
         OAuth2User oAuth2User = new OAuth2User("user_id", "user_email@test.com");
 
@@ -96,7 +96,7 @@ public class OAuth2UserServiceTest {
     }
 
     @Test
-    public void testLogin_WhenEmailAlreadyExistsButNotOAuth2Registered() {
+    void testLogin_WhenEmailAlreadyExistsButNotOAuth2Registered() {
         // Given
         OAuth2User oAuth2User = new OAuth2User("user_id", "user_email@test.com");
         MemberResponse emailExistsResponse = new MemberResponse("existing_id", "password", "USER", 456L, "ACTIVE");
@@ -114,7 +114,7 @@ public class OAuth2UserServiceTest {
     }
 
     @Test
-    public void testLogin_WhenUserIdAndEmailNotFound() {
+    void testLogin_WhenUserIdAndEmailNotFound() {
         // Given
         OAuth2User oAuth2User = new OAuth2User("user_id", "user_email@test.com");
 
@@ -131,7 +131,7 @@ public class OAuth2UserServiceTest {
 
 
     @Test
-    public void testLogin_WhenSuccessHandlerThrowsException() {
+    void testLogin_WhenSuccessHandlerThrowsException() {
         // Given
         OAuth2User oAuth2User = new OAuth2User("user_id", "user_email@test.com");
         MemberResponse memberResponse = new MemberResponse("user_id", "user_password", "USER", 123L, "ACTIVE");
@@ -148,7 +148,7 @@ public class OAuth2UserServiceTest {
     }
 
     @Test
-    public void testLogin_WhenUserAlreadyRegisteredAndSuccessHandlerSucceeds() {
+    void testLogin_WhenUserAlreadyRegisteredAndSuccessHandlerSucceeds() {
         // Given
         OAuth2User oAuth2User = new OAuth2User("user_id", "user_email@test.com");
         MemberResponse memberResponse = new MemberResponse("user_id", "user_password", "USER", 123L, "ACTIVE");
@@ -168,7 +168,7 @@ public class OAuth2UserServiceTest {
     }
 
     @Test
-    public void testLogin_WhenUserAlreadyRegisteredAndSuccessHandlerFails() {
+    void testLogin_WhenUserAlreadyRegisteredAndSuccessHandlerFails() {
         // Given
         OAuth2User oAuth2User = new OAuth2User("user_id", "user_email@test.com");
         MemberResponse memberResponse = new MemberResponse("user_id", "user_password", "USER", 123L, "ACTIVE");
@@ -185,7 +185,7 @@ public class OAuth2UserServiceTest {
 
 
     @Test
-    public void testLogin_WhenSuccessHandlerThrowsRuntimeException() throws IOException {
+    void testLogin_WhenSuccessHandlerThrowsRuntimeException() throws IOException {
         // Given
         OAuth2User oAuth2User = new OAuth2User("user_id", "user_email@test.com");
         MemberResponse memberResponse = new MemberResponse("user_id", "password", "USER", 123L, "ACTIVE");
@@ -200,10 +200,8 @@ public class OAuth2UserServiceTest {
         assertEquals("Login SuccessHandler 중 실패", exception.getMessage());
     }
 
-
-    // new
     @Test
-    public void testLogin_WhenMemberResponseIsNull() {
+    void testLogin_WhenMemberResponseIsNull() {
         // Given
         OAuth2User oAuth2User = new OAuth2User("user_id", "user_email@test.com");
         when(memberFeignClient.findByUsername(oAuth2User.id())).thenReturn(ResponseEntity.ok(null));
@@ -214,7 +212,7 @@ public class OAuth2UserServiceTest {
     }
 
     @Test
-    public void testLogin_WhenCustomerIdIsNull() {
+   void testLogin_WhenCustomerIdIsNull() {
         // Given
         OAuth2User oAuth2User = new OAuth2User("user_id", "user_email@test.com");
         MemberResponse memberResponse = new MemberResponse("user_id", "password", "USER", null, "ACTIVE");
@@ -226,7 +224,7 @@ public class OAuth2UserServiceTest {
     }
 
     @Test
-    public void testLogin_WhenMemberResponseIsValid() throws IOException {
+    void testLogin_WhenMemberResponseIsValid() throws IOException {
         // Given
         OAuth2User oAuth2User = new OAuth2User("user_id", "user_email@test.com");
         MemberResponse memberResponse = new MemberResponse("user_id", "password", "USER", 123L, "ACTIVE");
