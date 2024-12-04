@@ -97,10 +97,10 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
 	@Override
 	protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response,
 		AuthenticationException failed) throws IOException, ServletException {
-		log.info("로그인 실패 : {}", failed.getMessage());
+		log.info("로그인 실패 : {}", "아이디 또는 비밀번호를 확인하세요");
 		ErrorResponse errorResponse = new ErrorResponse(
 			HttpServletResponse.SC_UNAUTHORIZED,
-			failed.getMessage(),
+			"아이디 또는 비밀번호를 확인하세요",
 			request.getRequestURI()
 		);
 
