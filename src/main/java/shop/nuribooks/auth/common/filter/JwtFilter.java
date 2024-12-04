@@ -37,7 +37,7 @@ public class JwtFilter extends OncePerRequestFilter {
 		}
 
 		String validAccessToken = accessToken.split(" ")[1];
-		if (jwtUtils.isExpired(validAccessToken)) {
+		if (jwtUtils.isExpired(validAccessToken).booleanValue()) {
 			filterChain.doFilter(request, response);
 			return;
 		}
