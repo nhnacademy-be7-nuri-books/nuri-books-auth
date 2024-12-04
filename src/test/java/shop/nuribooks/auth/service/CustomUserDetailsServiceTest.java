@@ -69,7 +69,7 @@ class CustomUserDetailsServiceTest {
     }
 
     @Test
-    public void testLoadUserByUsername_WhenMemberResponseIsNull() {
+    void testLoadUserByUsername_WhenMemberResponseIsNull() {
         // Given
         String username = "test_user";
         when(memberFeignClient.findByUsername(username)).thenReturn(ResponseEntity.ok(null));
@@ -81,7 +81,7 @@ class CustomUserDetailsServiceTest {
     }
 
     @Test
-    public void testLoadUserByUsername_WhenMemberResponseUsernameIsNull() {
+    void testLoadUserByUsername_WhenMemberResponseUsernameIsNull() {
         // Given
         String username = "test_user";
         MemberResponse memberResponse = new MemberResponse(null, "password", "USER", 123L, "ACTIVE");
