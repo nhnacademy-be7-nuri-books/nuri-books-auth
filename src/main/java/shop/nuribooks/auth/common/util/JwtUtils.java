@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import io.jsonwebtoken.Jwts;
 import lombok.extern.slf4j.Slf4j;
+import shop.nuribooks.auth.common.exception.UnauthorizedException;
 
 @Slf4j
 @Component
@@ -35,9 +36,8 @@ public class JwtUtils {
 				.getPayload()
 				.get("tokenType", String.class);
 		} catch (Exception ex) {
-			log.info("TokenType을 가져오는데 실패하였습니다.");
+			throw new UnauthorizedException("토큰을 읽는데 실패하였습니다 : Token Type");
 		}
-		return null;
 	}
 
 	public String getUsername(String token) {
@@ -49,9 +49,9 @@ public class JwtUtils {
 				.getPayload()
 				.get("userId", String.class);
 		} catch (Exception ex) {
-			log.info("UserId을 가져오는데 실패하였습니다.");
+			throw new UnauthorizedException("토큰을 읽는데 실패하였습니다 : Username");
+
 		}
-		return null;
 	}
 
 	public String getRole(String token) {
@@ -63,9 +63,8 @@ public class JwtUtils {
 				.getPayload()
 				.get("role", String.class);
 		} catch (Exception ex) {
-			log.info("Role을 가져오는데 실패하였습니다.");
+			throw new UnauthorizedException("토큰을 읽는데 실패하였습니다 : Role");
 		}
-		return null;
 	}
 
 	public Boolean isExpired(String token) {

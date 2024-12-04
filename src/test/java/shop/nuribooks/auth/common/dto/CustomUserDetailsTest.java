@@ -115,39 +115,39 @@ class CustomUserDetailsTest {
     @Test
     void testIsAccountNonExpired() {
         // Given
-        MemberResponse mockResponse = Mockito.mock(MemberResponse.class);
-        CustomUserDetails userDetails = new CustomUserDetails(mockResponse);
+        MemberResponse mockUser = new MemberResponse("testUser", "password123", "USER", 1L, "ACTIVE");
+        CustomUserDetails userDetails = new CustomUserDetails(mockUser);
 
         // When
-        boolean accountNonExpired = userDetails.isAccountNonExpired();
+        boolean result = userDetails.isAccountNonExpired();
 
         // Then
-        assertTrue(accountNonExpired);
+        assertTrue(result, "Account should always be non-expired");
     }
 
     @Test
     void testIsAccountNonLocked() {
         // Given
-        MemberResponse mockResponse = Mockito.mock(MemberResponse.class);
-        CustomUserDetails userDetails = new CustomUserDetails(mockResponse);
+        MemberResponse mockUser = new MemberResponse("testUser", "password123", "USER", 1L, "ACTIVE");
+        CustomUserDetails userDetails = new CustomUserDetails(mockUser);
 
         // When
-        boolean accountNonLocked = userDetails.isAccountNonLocked();
+        boolean result = userDetails.isAccountNonLocked();
 
         // Then
-        assertTrue(accountNonLocked);
+        assertTrue(result, "Account should always be non-locked");
     }
 
     @Test
     void testIsCredentialsNonExpired() {
         // Given
-        MemberResponse mockResponse = Mockito.mock(MemberResponse.class);
-        CustomUserDetails userDetails = new CustomUserDetails(mockResponse);
+        MemberResponse mockUser = new MemberResponse("testUser", "password123", "USER", 1L, "ACTIVE");
+        CustomUserDetails userDetails = new CustomUserDetails(mockUser);
 
         // When
-        boolean credentialsNonExpired = userDetails.isCredentialsNonExpired();
+        boolean result = userDetails.isCredentialsNonExpired();
 
         // Then
-        assertTrue(credentialsNonExpired);
+        assertTrue(result, "Credentials should always be non-expired");
     }
 }
