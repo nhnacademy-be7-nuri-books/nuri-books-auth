@@ -111,4 +111,43 @@ class CustomUserDetailsTest {
         // Then
         assertEquals(StatusType.INACTIVE, status);
     }
+
+    @Test
+    void testIsAccountNonExpired() {
+        // Given
+        MemberResponse mockUser = new MemberResponse("testUser", "password123", "USER", 1L, "ACTIVE");
+        CustomUserDetails userDetails = new CustomUserDetails(mockUser);
+
+        // When
+        boolean result = userDetails.isAccountNonExpired();
+
+        // Then
+        assertTrue(result, "Account should always be non-expired");
+    }
+
+    @Test
+    void testIsAccountNonLocked() {
+        // Given
+        MemberResponse mockUser = new MemberResponse("testUser", "password123", "USER", 1L, "ACTIVE");
+        CustomUserDetails userDetails = new CustomUserDetails(mockUser);
+
+        // When
+        boolean result = userDetails.isAccountNonLocked();
+
+        // Then
+        assertTrue(result, "Account should always be non-locked");
+    }
+
+    @Test
+    void testIsCredentialsNonExpired() {
+        // Given
+        MemberResponse mockUser = new MemberResponse("testUser", "password123", "USER", 1L, "ACTIVE");
+        CustomUserDetails userDetails = new CustomUserDetails(mockUser);
+
+        // When
+        boolean result = userDetails.isCredentialsNonExpired();
+
+        // Then
+        assertTrue(result, "Credentials should always be non-expired");
+    }
 }
