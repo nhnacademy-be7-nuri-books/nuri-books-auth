@@ -3,17 +3,9 @@ package shop.nuribooks.auth.common.util;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-import java.time.Instant;
-import java.util.Date;
-
-import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
-import io.jsonwebtoken.security.Keys;
 import shop.nuribooks.auth.common.exception.UnauthorizedException;
 
 class JwtUtilsTest {

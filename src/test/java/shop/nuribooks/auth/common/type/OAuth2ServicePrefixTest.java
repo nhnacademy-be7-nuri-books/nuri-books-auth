@@ -37,8 +37,8 @@ class OAuth2ServicePrefixTest {
 
         // Then
         assertEquals(2, values.length);
-        assertTrue(values[0] == OAuth2ServicePrefix.NAVER);
-        assertTrue(values[1] == OAuth2ServicePrefix.PAYCO);
+        assertSame(OAuth2ServicePrefix.NAVER, values[0]);
+        assertSame(OAuth2ServicePrefix.PAYCO, values[1]);
     }
 
     @Test

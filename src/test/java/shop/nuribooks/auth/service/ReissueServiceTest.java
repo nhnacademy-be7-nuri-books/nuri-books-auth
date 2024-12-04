@@ -13,16 +13,14 @@ import org.mockito.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockHttpServletResponse;
-import org.springframework.transaction.annotation.Transactional;
 
 import shop.nuribooks.auth.common.exception.BadRequestException;
 import shop.nuribooks.auth.common.exception.NotFoundException;
 import shop.nuribooks.auth.entity.RefreshToken;
 import shop.nuribooks.auth.repository.RefreshTokenRepository;
 import shop.nuribooks.auth.common.util.JwtUtils;
-import shop.nuribooks.auth.common.util.CookieUtils;
 
-public class ReissueServiceTest {
+class ReissueServiceTest {
 
     @Mock
     private RefreshTokenRepository refreshTokenRepository;
