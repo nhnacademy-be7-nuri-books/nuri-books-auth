@@ -1,7 +1,6 @@
 package shop.nuribooks.auth.common.feign;
 
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.ResponseEntity;
@@ -12,7 +11,7 @@ import static org.mockito.Mockito.*;
 import static org.assertj.core.api.Assertions.*;
 
 @SpringBootTest
-public class MemberFeignClientTest {
+class MemberFeignClientTest {
 
     @MockBean
     private MemberFeignClient memberFeignClient;
@@ -30,7 +29,7 @@ public class MemberFeignClientTest {
         ResponseEntity<MemberResponse> response = memberFeignClient.findByUsername(username);
 
         // Then
-        assertThat(response.getStatusCodeValue()).isEqualTo(200);
+        assertThat(response.getStatusCode().value()).isEqualTo(200);
         assertThat(response.getBody().username()).isEqualTo(username);
         assertThat(response.getBody().password()).isEqualTo("password123");
         assertThat(response.getBody().role()).isEqualTo("USER");
@@ -54,7 +53,7 @@ public class MemberFeignClientTest {
         ResponseEntity<MemberResponse> response = memberFeignClient.findByEmail(email);
 
         // Then
-        assertThat(response.getStatusCodeValue()).isEqualTo(200);
+        assertThat(response.getStatusCode().value()).isEqualTo(200);
         assertThat(response.getBody().username()).isEqualTo("testUser");
         assertThat(response.getBody().password()).isEqualTo("password123");
         assertThat(response.getBody().role()).isEqualTo("USER");
@@ -95,7 +94,7 @@ public class MemberFeignClientTest {
         ResponseEntity<NonMemberResponse> response = memberFeignClient.findNonMemberByEmail(email);
 
         // Then
-        assertThat(response.getStatusCodeValue()).isEqualTo(200);
+        assertThat(response.getStatusCode().value()).isEqualTo(200);
         assertThat(response.getBody().customerId()).isEqualTo(1L);
         assertThat(response.getBody().email()).isEqualTo(email);
         assertThat(response.getBody().password()).isEqualTo("nonmemberpassword");

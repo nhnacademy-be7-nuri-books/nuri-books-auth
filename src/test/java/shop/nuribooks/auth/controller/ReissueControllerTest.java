@@ -34,7 +34,6 @@ class ReissueControllerTest {
     void reissue_validRefreshToken_returnsOk() throws Exception {
         // Given
         String validRefreshToken = "valid-refresh-token";
-        HttpServletResponse response = mock(HttpServletResponse.class);
         when(reissueService.reissue(eq(validRefreshToken), any(HttpServletResponse.class)))
                 .thenReturn(new ResponseEntity<>(HttpStatus.OK));
 
