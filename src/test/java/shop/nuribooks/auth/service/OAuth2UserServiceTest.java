@@ -22,7 +22,7 @@ import shop.nuribooks.auth.repository.RefreshTokenRepository;
 import java.io.IOException;
 
 @SpringBootTest
-public class OAuth2UserServiceTest {
+class OAuth2UserServiceTest {
 
     @Mock
     private MemberFeignClient memberFeignClient;

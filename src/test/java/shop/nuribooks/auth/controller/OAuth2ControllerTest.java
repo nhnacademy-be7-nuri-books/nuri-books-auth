@@ -15,7 +15,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import shop.nuribooks.auth.dto.MemberResponse;
 import shop.nuribooks.auth.dto.OAuth2User;
 import shop.nuribooks.auth.service.OAuth2UserService;
 
